@@ -1,5 +1,7 @@
-use axum::{extract::State, Json};
+use axum::{Json, extract::State};
 use serde::Serialize;
+
+use crate::User;
 
 #[derive(Serialize)]
 pub struct UserResponse {
@@ -9,20 +11,19 @@ pub struct UserResponse {
     pub avatar_url: String,
 }
 
-pub async fn get_users(State(_state): State<crate::AppState>) -> Json<Vec<UserResponse>> {
-    let users = vec![
+impl From<&User> for UserResponse {
+    fn from(user: &User) -> Self {
         UserResponse {
-            first_name: "Alice".into(),
-            last_name: "Smith".into(),
-            email: "alice@example.com".into(),
-            avatar_url: "https://example.com/avatars/alice.png".into(),
-        },
-        UserResponse {
-            first_name: "Bob".into(),
-            last_name: "Jones".into(),
-            email: "bob@example.com".into(),
-            avatar_url: "https://example.com/avatars/bob.png".into(),
-        },
-    ];
-    Json(users)
+            first_name: user.first_name.clone(),
+            last_name: user.last_name.clone(),
+            email: user.email.clone(),
+            avatar_url: user.avatar_url.clone(),
+        }
+    }
+}
+
+pub async fn get_users(State(state): State<crate::AppState>) -> Json<Vec<UserResponse>> {
+    let users = state.users.read().unwrap();
+    let response: Vec<UserResponse> = users.iter().map(|u| u.into()).collect();
+    Json(response)
 }

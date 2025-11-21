@@ -3,16 +3,17 @@ use clap::Parser;
 use std::path::PathBuf;
 
 mod state;
-pub use state::{AppState, build_state, Audiobook};
+pub use state::{AppState, Audiobook, Session, User, build_state};
 
 mod scan;
 pub use scan::{initial_scan, setup_watcher};
 
 mod config;
-pub use config::Config;
+pub use config::{Config, SESSION_COOKIE_NAME, SESSION_DURATION_HOURS};
 
-mod handlers;
 mod app;
+mod auth;
+mod handlers;
 pub use app::build_app;
 
 #[derive(Parser, Debug)]

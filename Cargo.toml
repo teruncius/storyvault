@@ -5,6 +5,8 @@ edition = "2024"
 
 [dependencies]
 axum = "0.8.7"
+bcrypt = "0.15"
+chrono = "0.4"
 clap = { version = "4.5.53", features = ["derive"] }
 notify = "8.2.0"
 serde = { version = "1.0.228", features = ["derive"] }
