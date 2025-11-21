@@ -3,6 +3,9 @@ use std::fs;
 use std::net::{IpAddr, SocketAddr};
 use std::path::{Path, PathBuf};
 
+pub const SESSION_COOKIE_NAME: &str = "session_id";
+pub const SESSION_DURATION_HOURS: i64 = 24;
+
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     pub server: ServerConfig,
