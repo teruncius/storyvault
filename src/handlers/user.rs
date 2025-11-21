@@ -24,6 +24,6 @@ impl From<&User> for UserResponse {
 
 pub async fn get_users(State(state): State<crate::AppState>) -> Json<Vec<UserResponse>> {
     let users = state.users.read().unwrap();
-    let response: Vec<UserResponse> = users.iter().map(|u| u.into()).collect();
+    let response: Vec<UserResponse> = users.values().map(|u| u.into()).collect();
     Json(response)
 }

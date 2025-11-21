@@ -31,7 +31,7 @@ pub async fn login(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // Find user by email
-    let user = users.iter().find(|u| u.email == payload.email);
+    let user = users.values().find(|u| u.email == payload.email);
 
     match user {
         Some(user) => {

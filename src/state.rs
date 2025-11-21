@@ -35,16 +35,22 @@ pub struct Session {
 
 #[derive(Clone)]
 pub struct AppState {
-    pub audiobooks: Arc<RwLock<Vec<Audiobook>>>,
+    pub audiobooks: Arc<RwLock<HashMap<Uuid, Audiobook>>>,
     pub config: Config,
     pub sessions: Arc<RwLock<HashMap<Uuid, Session>>>,
-    pub users: Arc<RwLock<Vec<User>>>,
+    pub users: Arc<RwLock<HashMap<Uuid, User>>>,
 }
 
 pub fn build_state(config: &Config) -> AppState {
-    let users = vec![
+    let mut users = HashMap::new();
+
+    let alice_id = Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap();
+    let bob_id = Uuid::parse_str("00000000-0000-0000-0000-000000000002").unwrap();
+
+    users.insert(
+        alice_id,
         User {
-            id: Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap(),
+            id: alice_id,
             first_name: "Alice".into(),
             last_name: "Smith".into(),
             email: "alice@example.com".into(),
@@ -52,8 +58,12 @@ pub fn build_state(config: &Config) -> AppState {
                 .unwrap_or_else(|_| "$2b$12$dummy_hash_for_alice".to_string()),
             avatar_url: "https://example.com/avatars/alice.png".into(),
         },
+    );
+
+    users.insert(
+        bob_id,
         User {
-            id: Uuid::parse_str("00000000-0000-0000-0000-000000000002").unwrap(),
+            id: bob_id,
             first_name: "Bob".into(),
             last_name: "Jones".into(),
             email: "bob@example.com".into(),
@@ -61,10 +71,10 @@ pub fn build_state(config: &Config) -> AppState {
                 .unwrap_or_else(|_| "$2b$12$dummy_hash_for_bob".to_string()),
             avatar_url: "https://example.com/avatars/bob.png".into(),
         },
-    ];
+    );
 
     AppState {
-        audiobooks: Arc::new(RwLock::new(Vec::new())),
+        audiobooks: Arc::new(RwLock::new(HashMap::new())),
         config: config.clone(),
         sessions: Arc::new(RwLock::new(HashMap::new())),
         users: Arc::new(RwLock::new(users)),

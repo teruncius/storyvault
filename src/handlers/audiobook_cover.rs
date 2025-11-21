@@ -13,7 +13,7 @@ pub async fn get_audiobook_cover(
 ) -> Response {
     let book_path = {
         let books = state.audiobooks.read().unwrap();
-        books.iter().find(|b| b.id == id).map(|b| b.path.clone())
+        books.get(&id).map(|b| b.path.clone())
     };
 
     if let Some(path) = book_path {
