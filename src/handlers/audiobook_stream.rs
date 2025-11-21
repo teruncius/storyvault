@@ -15,7 +15,7 @@ pub async fn stream_audiobook(
 ) -> Response {
     let audio_path = {
         let books = state.audiobooks.read().unwrap();
-        books.iter().find(|b| b.id == id).map(|b| b.path.clone())
+        books.get(&id).map(|b| b.path.clone())
     };
 
     let Some(path) = audio_path else {

@@ -34,7 +34,7 @@ pub async fn list_audiobooks(State(state): State<AppState>) -> Json<Vec<Audioboo
     let books = state.audiobooks.read().unwrap();
     let base_url = &state.config.url.base;
     let response: Vec<AudiobookResponse> = books
-        .iter()
+        .values()
         .map(|b| AudiobookResponse::from_audiobook(b, base_url))
         .collect();
     Json(response)

@@ -83,7 +83,7 @@ pub async fn auth_middleware(
             Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
         };
 
-        match users.iter().find(|u| u.id == session.user_id) {
+        match users.get(&session.user_id) {
             Some(user) => user.clone(),
             None => return StatusCode::UNAUTHORIZED.into_response(),
         }

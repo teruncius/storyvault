@@ -6,8 +6,10 @@ use tokio::sync::mpsc;
 
 use crate::{AppState, Audiobook};
 
-pub fn scan_audiobooks(path: &Path) -> std::io::Result<Vec<Audiobook>> {
-    let mut books = Vec::new();
+pub fn scan_audiobooks(
+    path: &Path,
+) -> std::io::Result<std::collections::HashMap<uuid::Uuid, Audiobook>> {
+    let mut books = std::collections::HashMap::new();
 
     if !path.exists() {
         return Ok(books);
@@ -26,7 +28,7 @@ pub fn scan_audiobooks(path: &Path) -> std::io::Result<Vec<Audiobook>> {
                 match serde_yaml::from_str::<Audiobook>(&content) {
                     Ok(mut book) => {
                         book.path = audio_path;
-                        books.push(book);
+                        books.insert(book.id, book);
                     }
                     Err(e) => println!("Failed to parse {:?}: {}", index_path, e),
                 }
@@ -43,7 +45,7 @@ pub fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
         match scan_audiobooks(audiobooks_dir) {
             Ok(books) => {
                 println!("Found {} audiobooks:", books.len());
-                for book in &books {
+                for book in books.values() {
                     println!(" - {} by {} ({:?})", book.title, book.author, book.path);
                 }
                 let mut state_guard = state.audiobooks.write().unwrap();
