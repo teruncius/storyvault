@@ -13,6 +13,8 @@ pub use config::{Config, SESSION_COOKIE_NAME, SESSION_DURATION_HOURS};
 
 mod app;
 mod auth;
+mod db;
+mod events;
 mod handlers;
 pub use app::build_app;
 
@@ -34,7 +36,13 @@ async fn main() {
         std::process::exit(1);
     });
 
-    let shared_state = build_state(&config);
+    // Initialize database
+    let db_pool = db::init_db(&config.database.url).await.unwrap_or_else(|e| {
+        eprintln!("Failed to initialize database: {}", e);
+        std::process::exit(1);
+    });
+
+    let shared_state = build_state(&config, db_pool);
 
     // Initial scan
     let audiobooks_dir = config.audiobooks_dir();

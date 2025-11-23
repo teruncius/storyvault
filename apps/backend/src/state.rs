@@ -1,6 +1,7 @@
 use crate::Config;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use sqlx::SqlitePool;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
@@ -39,9 +40,10 @@ pub struct AppState {
     pub config: Config,
     pub sessions: Arc<RwLock<HashMap<Uuid, Session>>>,
     pub users: Arc<RwLock<HashMap<Uuid, User>>>,
+    pub db_pool: SqlitePool,
 }
 
-pub fn build_state(config: &Config) -> AppState {
+pub fn build_state(config: &Config, db_pool: SqlitePool) -> AppState {
     let mut users = HashMap::new();
 
     let alice_id = Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap();
@@ -78,5 +80,6 @@ pub fn build_state(config: &Config) -> AppState {
         config: config.clone(),
         sessions: Arc::new(RwLock::new(HashMap::new())),
         users: Arc::new(RwLock::new(users)),
+        db_pool,
     }
 }

@@ -7,3 +7,5 @@ cors:
 url:
   base: http://localhost:3000
 vault: data/
+database:
+  url: sqlite://storyvault.db
