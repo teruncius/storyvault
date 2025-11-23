@@ -44,7 +44,7 @@ async fn main() {
     let _watcher = setup_watcher(config.vault.clone(), shared_state.clone());
 
     // Build our application
-    let app = build_app(shared_state);
+    let app = build_app(shared_state, &config);
 
     // Run it
     build_server(app, &config).await;
