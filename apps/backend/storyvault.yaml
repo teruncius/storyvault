@@ -1,6 +1,9 @@
 server:
   host: 127.0.0.1
   port: 3000
+cors:
+  allowed_origins:
+    - http://localhost:5173
 url:
   base: http://localhost:3000
 vault: data/

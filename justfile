@@ -2,7 +2,7 @@ default:
     just --list
 
 run:
-    cargo run
+    pnpm run dev
 
 test:
-    hurl --test tests/*.hurl
+    cd apps/backend && hurl --test tests/*.hurl
