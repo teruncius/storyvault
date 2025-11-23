@@ -4,8 +4,11 @@ default:
 run:
     pnpm run dev
 
-test:
-    cd apps/backend && hurl --test tests/*.hurl
+format:
+    pnpm run format
 
 lint:
     pnpm run lint
+
+test:
+    cd apps/backend && hurl --test tests/*.hurl
