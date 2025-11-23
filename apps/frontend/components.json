@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@storyvault/frontend/components",
+    "utils": "@storyvault/frontend/lib/utils",
+    "ui": "@storyvault/frontend/components/ui",
+    "lib": "@storyvault/frontend/lib",
+    "hooks": "@storyvault/frontend/hooks"
+  },
+  "registries": {}
+}
