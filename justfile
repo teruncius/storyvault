@@ -6,3 +6,6 @@ run:
 
 test:
     cd apps/backend && hurl --test tests/*.hurl
+
+lint:
+    pnpm run lint

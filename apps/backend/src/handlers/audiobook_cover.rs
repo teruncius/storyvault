@@ -16,28 +16,28 @@ pub async fn get_audiobook_cover(
         books.get(&id).map(|b| b.path.clone())
     };
 
-    if let Some(path) = book_path {
-        if let Some(parent) = path.parent() {
-            // Try WebP first
-            let cover_webp = parent.join("cover.webp");
-            if cover_webp.exists() {
-                match tokio::fs::read(&cover_webp).await {
-                    Ok(bytes) => {
-                        return ([(header::CONTENT_TYPE, "image/webp")], bytes).into_response();
-                    }
-                    Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+    if let Some(path) = book_path
+        && let Some(parent) = path.parent()
+    {
+        // Try WebP first
+        let cover_webp = parent.join("cover.webp");
+        if cover_webp.exists() {
+            match tokio::fs::read(&cover_webp).await {
+                Ok(bytes) => {
+                    return ([(header::CONTENT_TYPE, "image/webp")], bytes).into_response();
                 }
+                Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
             }
+        }
 
-            // Fallback to JPG
-            let cover_jpg = parent.join("cover.jpg");
-            if cover_jpg.exists() {
-                match tokio::fs::read(&cover_jpg).await {
-                    Ok(bytes) => {
-                        return ([(header::CONTENT_TYPE, "image/jpeg")], bytes).into_response();
-                    }
-                    Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        // Fallback to JPG
+        let cover_jpg = parent.join("cover.jpg");
+        if cover_jpg.exists() {
+            match tokio::fs::read(&cover_jpg).await {
+                Ok(bytes) => {
+                    return ([(header::CONTENT_TYPE, "image/jpeg")], bytes).into_response();
                 }
+                Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
             }
         }
     }

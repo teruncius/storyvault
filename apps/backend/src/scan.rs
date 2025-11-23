@@ -84,7 +84,7 @@ pub fn setup_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
                     // Simple logic: if any yaml file changes, re-scan
                     let should_rescan = event.paths.iter().any(|p| {
                         p.extension()
-                            .map_or(false, |ext| ext == "yaml" || ext == "yml")
+                            .is_some_and(|ext| ext == "yaml" || ext == "yml")
                     });
 
                     if should_rescan {
