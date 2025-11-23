@@ -1,0 +1,8 @@
+{
+    "name": "@storyvault/backend",
+    "scripts": {
+        "build": "cargo build --release",
+        "dev": "cargo watch -x run",
+        "lint": "cargo fmt && cargo clippy"
+    }
+}

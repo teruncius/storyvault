@@ -11,6 +11,7 @@ pub struct Config {
     pub server: ServerConfig,
     pub url: UrlConfig,
     pub vault: PathBuf,
+    pub cors: CorsConfig,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -22,6 +23,11 @@ pub struct ServerConfig {
 #[derive(Debug, Deserialize, Clone)]
 pub struct UrlConfig {
     pub base: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct CorsConfig {
+    pub allowed_origins: Vec<String>,
 }
 
 impl Config {
