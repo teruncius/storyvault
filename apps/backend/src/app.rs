@@ -1,5 +1,5 @@
 use crate::{
-    AppState,
+    AppState, Config,
     auth::auth_middleware,
     handlers::{
         get_audiobook_cover, get_audiobook_position, get_users, health_check, index,
@@ -7,11 +7,16 @@ use crate::{
     },
 };
 use axum::{
-    Router, middleware,
+    Router,
+    http::header::{AUTHORIZATION, CONTENT_TYPE},
+    middleware,
     routing::{get, post, put},
 };
+use tower_http::cors::{Any, CorsLayer};
 
-pub fn build_app(state: AppState) -> Router {
+pub fn build_app(state: AppState, config: &Config) -> Router {
+    let cors = build_cors(config);
+
     // Public routes (no authentication required)
     let public_router = Router::new()
         .route("/", get(index))
@@ -36,5 +41,26 @@ pub fn build_app(state: AppState) -> Router {
     Router::new()
         .merge(public_router)
         .merge(protected_router)
+        .layer(cors)
         .with_state(state)
+}
+
+fn build_cors(config: &Config) -> CorsLayer {
+    let mut cors = CorsLayer::new();
+
+    let origins: Vec<_> = config
+        .cors
+        .allowed_origins
+        .iter()
+        .filter_map(|origin| axum::http::HeaderValue::from_str(origin).ok())
+        .collect();
+
+    cors = if origins.is_empty() {
+        cors.allow_origin(Any)
+    } else {
+        cors.allow_origin(origins)
+    };
+
+    cors.allow_methods(Any)
+        .allow_headers(vec![AUTHORIZATION, CONTENT_TYPE])
 }
