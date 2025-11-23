@@ -37,7 +37,7 @@ impl Config {
         // Validate configuration immediately
         config
             .validate()
-            .map_err(|e| Box::<dyn std::error::Error>::from(e))?;
+            .map_err(Box::<dyn std::error::Error>::from)?;
         Ok(config)
     }
 
