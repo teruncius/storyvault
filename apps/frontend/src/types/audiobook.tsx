@@ -1,0 +1,7 @@
+export interface Audiobook {
+    id: string;
+    title: string;
+    author: string;
+    year: string;
+    cover_url: string;
+}

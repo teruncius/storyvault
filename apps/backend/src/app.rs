@@ -19,14 +19,14 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
 
     // Public routes (no authentication required)
     let public_router = Router::new()
+        .route("/audiobook", get(list_audiobooks))
+        .route("/audiobook/{id}/cover", get(get_audiobook_cover))
         .route("/", get(index))
         .route("/health", get(health_check))
         .route("/auth/login", post(login));
 
     // Protected routes (authentication required)
     let protected_router = Router::new()
-        .route("/audiobook", get(list_audiobooks))
-        .route("/audiobook/{id}/cover", get(get_audiobook_cover))
         .route("/audiobook/{id}/position", get(get_audiobook_position))
         .route("/audiobook/{id}/position", put(set_audiobook_position))
         .route("/audiobook/{id}/stream", get(stream_audiobook))
