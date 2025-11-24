@@ -9,6 +9,7 @@
         }
     ],
     "compilerOptions": {
+        /* Imports */
         "baseUrl": ".",
         "paths": {
             "@storyvault/frontend/*": ["./src/*"]

@@ -11,4 +11,4 @@ lint:
     pnpm run lint
 
 test:
-    cd apps/backend && hurl --test tests/*.hurl
+    hurl --test apps/backend/tests/*.hurl
