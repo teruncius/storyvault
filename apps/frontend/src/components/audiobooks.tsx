@@ -1,9 +1,4 @@
-import {
-    container,
-    image,
-    tile,
-    title,
-} from "@storyvault/frontend/components/audiobooks.css";
+import * as styles from "@storyvault/frontend/components/audiobooks.css";
 import type { Audiobook } from "@storyvault/frontend/types/audiobook";
 
 interface Props {
@@ -12,15 +7,15 @@ interface Props {
 
 export function Audiobooks(props: Props) {
     return (
-        <div className={container}>
+        <div className={styles.container}>
             {props.audiobooks.map((audiobook) => (
-                <div className={tile} key={audiobook.id}>
+                <div className={styles.tile} key={audiobook.id}>
                     <img
                         src={audiobook.cover_url}
                         alt={audiobook.title}
-                        className={image}
+                        className={styles.image}
                     />
-                    <div className={title}>{audiobook.title}</div>
+                    <div className={styles.title}>{audiobook.title}</div>
                 </div>
             ))}
         </div>

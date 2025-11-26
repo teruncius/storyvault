@@ -1,5 +1,5 @@
 import { vars } from "@storyvault/frontend/theme/vars.css";
-import { style } from "@vanilla-extract/css";
+import { style, styleVariants } from "@vanilla-extract/css";
 
 export const container = style({
     display: "flex",
@@ -43,8 +43,42 @@ export const footer = style({
     bottom: 0,
 });
 
-export const center = style({
-    display: "flex",
-    flexDirection: "column",
-    width: 1200,
+export const center = styleVariants({
+    header: {
+        display: "flex",
+        flexDirection: "row",
+        width: 1200,
+        justifyContent: "space-between",
+    },
+    main: {
+        display: "flex",
+        flexDirection: "column",
+        width: 1200,
+    },
+    footer: {
+        display: "flex",
+        flexDirection: "column",
+        width: 1200,
+    },
+});
+
+export const xxx = styleVariants({
+    left: {
+        display: "flex",
+        flexDirection: "row",
+    },
+    right: {
+        display: "flex",
+        flexDirection: "row",
+        gap: "1rem",
+    },
+});
+
+export const logout = style({
+    cursor: "pointer",
+    background: "transparent",
+    border: "none",
+    color: vars.color.text,
+    fontSize: "1rem",
+    fontWeight: "bold",
 });

@@ -1,3 +1,4 @@
 /.turbo
 /target
 /storyvault.db
+/node_modules

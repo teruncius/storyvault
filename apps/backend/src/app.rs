@@ -2,13 +2,16 @@ use crate::{
     AppState, Config,
     auth::auth_middleware,
     handlers::{
-        get_audiobook_cover, get_audiobook_position, get_users, health_check, index,
+        get_audiobook_cover, get_audiobook_position, get_favicon, get_users, health_check, index,
         list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
     },
 };
 use axum::{
     Router,
-    http::header::{AUTHORIZATION, CONTENT_TYPE},
+    http::{
+        Method,
+        header::{AUTHORIZATION, CONTENT_TYPE, COOKIE},
+    },
     middleware,
     routing::{get, post, put},
 };
@@ -19,14 +22,15 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
 
     // Public routes (no authentication required)
     let public_router = Router::new()
-        .route("/audiobook", get(list_audiobooks))
-        .route("/audiobook/{id}/cover", get(get_audiobook_cover))
         .route("/", get(index))
+        .route("/favicon.ico", get(get_favicon))
         .route("/health", get(health_check))
         .route("/auth/login", post(login));
 
     // Protected routes (authentication required)
     let protected_router = Router::new()
+        .route("/audiobook", get(list_audiobooks))
+        .route("/audiobook/{id}/cover", get(get_audiobook_cover))
         .route("/audiobook/{id}/position", get(get_audiobook_position))
         .route("/audiobook/{id}/position", put(set_audiobook_position))
         .route("/audiobook/{id}/stream", get(stream_audiobook))
@@ -61,6 +65,13 @@ fn build_cors(config: &Config) -> CorsLayer {
         cors.allow_origin(origins)
     };
 
-    cors.allow_methods(Any)
-        .allow_headers(vec![AUTHORIZATION, CONTENT_TYPE])
+    cors.allow_methods([
+        Method::GET,
+        Method::POST,
+        Method::PUT,
+        Method::PATCH,
+        Method::DELETE,
+    ])
+    .allow_headers(vec![AUTHORIZATION, CONTENT_TYPE, COOKIE])
+    .allow_credentials(true)
 }
