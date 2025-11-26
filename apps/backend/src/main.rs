@@ -3,7 +3,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 mod state;
-pub use state::{AppState, Audiobook, Session, User, build_state};
+pub use state::{AppState, Audiobook, ScanProblem, ScanProblemType, Session, User, build_state};
 
 mod scan;
 pub use scan::{initial_scan, setup_watcher};

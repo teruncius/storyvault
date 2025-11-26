@@ -2,8 +2,8 @@ use crate::{
     AppState, Config,
     auth::auth_middleware,
     handlers::{
-        get_audiobook, get_audiobook_cover, get_favicon, get_users, health_check, index,
-        list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
+        get_audiobook, get_audiobook_cover, get_favicon, get_problems, get_users, health_check,
+        index, list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
     },
 };
 use axum::{
@@ -37,6 +37,7 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
         .route("/user", get(get_users))
         .route("/auth/logout", post(logout))
         .route("/auth/me", get(me))
+        .route("/problem", get(get_problems))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
             auth_middleware,

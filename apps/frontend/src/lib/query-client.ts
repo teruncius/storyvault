@@ -34,7 +34,11 @@ function shouldRetry(failureCount: number, error: unknown): boolean {
 }
 
 function handleUnauthorizedError(error: unknown): void {
-    if (error instanceof HttpError && error.status === 401 && !error.skipRedirect) {
+    if (
+        error instanceof HttpError &&
+        error.status === 401 &&
+        !error.skipRedirect
+    ) {
         queryClient.clear();
         window.location.replace("/login");
     }
@@ -51,6 +55,10 @@ export class HttpError extends Error {
     }
 
     static fromResponse(response: Response, skipRedirect?: boolean): HttpError {
-        return new HttpError(response.statusText, response.status, skipRedirect);
+        return new HttpError(
+            response.statusText,
+            response.status,
+            skipRedirect,
+        );
     }
 }

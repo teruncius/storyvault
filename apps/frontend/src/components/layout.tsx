@@ -5,6 +5,7 @@ import { Logo } from "@sv/fe/components/logo";
 import { useLogout } from "@sv/fe/hooks/user";
 import { Player } from "@sv/fe/components/player";
 import type { User } from "@sv/fe/types/user";
+import { Link } from "react-router-dom";
 
 interface Props extends PropsWithChildren {
     user: User;
@@ -18,6 +19,14 @@ export function Layout({ children, user }: Props) {
                 <div className={styles.center.header}>
                     <div className={styles.area.left}>
                         <Logo />
+                        <nav className={styles.nav}>
+                            <Link to="/" className={styles.navLink}>
+                                Home
+                            </Link>
+                            <Link to="/problems" className={styles.navLink}>
+                                Problems
+                            </Link>
+                        </nav>
                     </div>
                     <div className={styles.area.right}>
                         <button

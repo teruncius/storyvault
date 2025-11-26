@@ -66,11 +66,29 @@ export const area = styleVariants({
     left: {
         display: "flex",
         flexDirection: "row",
+        alignItems: "center",
+        gap: "1.5rem",
     },
     right: {
         display: "flex",
         flexDirection: "row",
         gap: "1rem",
+    },
+});
+
+export const nav = style({
+    display: "flex",
+    flexDirection: "row",
+    gap: "1rem",
+});
+
+export const navLink = style({
+    color: vars.color.text,
+    fontSize: "1rem",
+    fontWeight: "bold",
+    textDecoration: "none",
+    ":hover": {
+        textDecoration: "underline",
     },
 });
 
