@@ -6,6 +6,16 @@ use tokio::sync::mpsc;
 
 use crate::{AppState, Audiobook};
 
+fn get_audio_duration(path: &Path) -> Option<u64> {
+    match mp3_duration::from_path(path) {
+        Ok(duration) => Some(duration.as_secs()),
+        Err(e) => {
+            eprintln!("Failed to read duration from {:?}: {}", path, e);
+            None
+        }
+    }
+}
+
 pub fn scan_audiobooks(
     path: &Path,
 ) -> std::io::Result<std::collections::HashMap<uuid::Uuid, Audiobook>> {
@@ -27,6 +37,7 @@ pub fn scan_audiobooks(
                 let content = fs::read_to_string(&index_path)?;
                 match serde_yaml::from_str::<Audiobook>(&content) {
                     Ok(mut book) => {
+                        book.duration_seconds = get_audio_duration(&audio_path);
                         book.path = audio_path;
                         books.insert(book.id, book);
                     }
