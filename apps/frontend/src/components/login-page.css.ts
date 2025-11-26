@@ -102,4 +102,3 @@ export const error = style({
     borderRadius: "8px",
     textAlign: "center",
 });
-

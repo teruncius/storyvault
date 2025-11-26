@@ -56,7 +56,11 @@ export function LoginPage() {
                     />
                 </div>
 
-                <button type="submit" disabled={isPending} className={styles.button}>
+                <button
+                    type="submit"
+                    disabled={isPending}
+                    className={styles.button}
+                >
                     {isPending ? "Signing in..." : "Sign In"}
                 </button>
             </form>

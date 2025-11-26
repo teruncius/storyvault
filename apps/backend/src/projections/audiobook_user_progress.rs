@@ -76,7 +76,7 @@ impl AudiobookUserProgressProjection {
         .fetch_optional(&self.pool)
         .await?;
 
-        Ok(result.map(|(position,)| position as u64))
+        Ok(result.map(|(position,)| position))
     }
 
     /// Get all positions for a user, returning a map of audiobook_id -> position_seconds

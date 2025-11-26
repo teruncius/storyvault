@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import { LoginPage } from "@sv/fe/components/login-page";
 import { HomePage } from "@sv/fe/components/home-page";
+import { ProblemPage } from "@sv/fe/components/problem-page";
 import { Layout } from "@sv/fe/components/layout";
 
 export function App() {
@@ -38,6 +39,7 @@ function Content() {
                 <Route path="/login" element={login} />
                 <Route path="/" element={<ProtectedRoute />}>
                     <Route index element={<HomePage />} />
+                    <Route path="problems" element={<ProblemPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

@@ -8,6 +8,29 @@ use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use uuid::Uuid;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ScanProblemType {
+    MissingIndexYaml,
+    MissingAudioFile,
+    InvalidYamlFormat,
+    UnableToExtractDuration,
+    MissingCover,
+    InvalidDataFormat,
+    MissingStorageDirectory,
+    FailedToReadFile,
+    FailedToReadDirectory,
+    FailedToReadDirectoryEntry,
+    ScanFailed,
+    RescanFailed,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScanProblem {
+    pub path: PathBuf,
+    pub problem_type: ScanProblemType,
+    pub message: String,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Audiobook {
     pub id: Uuid,
@@ -44,6 +67,7 @@ pub struct AppState {
     pub users: Arc<RwLock<HashMap<Uuid, User>>>,
     pub db_pool: SqlitePool,
     pub event_queue: EventQueue,
+    pub scan_problems: Arc<RwLock<Vec<ScanProblem>>>,
 }
 
 pub fn build_state(config: &Config, db_pool: SqlitePool, event_queue: EventQueue) -> AppState {
@@ -85,5 +109,6 @@ pub fn build_state(config: &Config, db_pool: SqlitePool, event_queue: EventQueue
         users: Arc::new(RwLock::new(users)),
         db_pool,
         event_queue,
+        scan_problems: Arc::new(RwLock::new(Vec::new())),
     }
 }
