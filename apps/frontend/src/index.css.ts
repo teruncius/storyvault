@@ -7,4 +7,5 @@ globalStyle("html", {
 globalStyle("body", {
     margin: 0,
     fontSize: 18,
+    fontFamily: "Inter, sans-serif",
 });
