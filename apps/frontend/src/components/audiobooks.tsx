@@ -28,7 +28,7 @@ export function Audiobooks(props: Props) {
                     />
                     <div className={styles.title}>{audiobook.title}</div>
                     <div className={styles.subtitle}>
-                        <>{audiobook.author}, {audiobook.year}</>
+                        <>{audiobook.authors.join(", ")} - {audiobook.year}</>
                     </div>
                 </button>
             ))}

@@ -161,7 +161,12 @@ pub fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
         Ok(result) => {
             println!("Found {} audiobooks:", result.books.len());
             for book in result.books.values() {
-                println!(" - {} by {} ({:?})", book.title, book.author, book.path);
+                println!(
+                    " - {} by {} ({:?})",
+                    book.title,
+                    book.authors.join(", "),
+                    book.path
+                );
             }
             if !result.problems.is_empty() {
                 println!("Found {} problems during scan:", result.problems.len());

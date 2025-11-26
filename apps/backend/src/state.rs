@@ -35,12 +35,30 @@ pub struct ScanProblem {
 pub struct Audiobook {
     pub id: Uuid,
     pub title: String,
-    pub author: String,
+    #[serde(alias = "author", deserialize_with = "deserialize_authors")]
+    pub authors: Vec<String>,
     pub year: u32,
     #[serde(skip)]
     pub path: PathBuf,
     #[serde(skip)]
     pub duration_seconds: Option<u64>,
+}
+
+fn deserialize_authors<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum AuthorsOrAuthor {
+        Authors(Vec<String>),
+        Author(String),
+    }
+
+    match AuthorsOrAuthor::deserialize(deserializer)? {
+        AuthorsOrAuthor::Authors(authors) => Ok(authors),
+        AuthorsOrAuthor::Author(author) => Ok(vec![author]),
+    }
 }
 
 #[derive(Debug, Clone)]
