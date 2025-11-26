@@ -40,7 +40,7 @@ export function useLogin() {
                 credentials: "include",
             });
             if (!response.ok) {
-                throw HttpError.fromResponse(response);
+                throw HttpError.fromResponse(response, true);
             }
         },
         onSuccess: () => {

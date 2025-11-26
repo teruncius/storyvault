@@ -34,7 +34,7 @@ function shouldRetry(failureCount: number, error: unknown): boolean {
 }
 
 function handleUnauthorizedError(error: unknown): void {
-    if (error instanceof HttpError && error.status === 401) {
+    if (error instanceof HttpError && error.status === 401 && !error.skipRedirect) {
         queryClient.clear();
         window.location.replace("/login");
     }
@@ -42,13 +42,15 @@ function handleUnauthorizedError(error: unknown): void {
 
 export class HttpError extends Error {
     readonly status: number;
+    readonly skipRedirect?: boolean;
 
-    constructor(message: string, status: number) {
+    constructor(message: string, status: number, skipRedirect?: boolean) {
         super(message);
         this.status = status;
+        this.skipRedirect = skipRedirect;
     }
 
-    static fromResponse(response: Response): HttpError {
-        return new HttpError(response.statusText, response.status);
+    static fromResponse(response: Response, skipRedirect?: boolean): HttpError {
+        return new HttpError(response.statusText, response.status, skipRedirect);
     }
 }
