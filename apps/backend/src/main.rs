@@ -16,6 +16,8 @@ mod auth;
 mod db;
 mod events;
 mod handlers;
+mod iso8601;
+mod projections;
 pub use app::build_app;
 
 #[derive(Parser, Debug)]
@@ -42,13 +44,13 @@ async fn main() {
         std::process::exit(1);
     });
 
-    // Create event queue and listener
+    // Create event queue and bus
     let (event_queue, receiver) = events::EventQueue::new();
-    let listener = events::EventListener::new(receiver, db_pool.clone());
+    let event_bus = events::EventBus::new(receiver, db_pool.clone());
 
     // Spawn background task to process events
     tokio::spawn(async move {
-        listener.start().await;
+        event_bus.start().await;
     });
 
     let shared_state = build_state(&config, db_pool, event_queue);

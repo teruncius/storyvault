@@ -1,6 +1,5 @@
-use super::{Event, EventPayload};
+use super::Event;
 use sqlx::SqlitePool;
-use uuid::Uuid;
 
 pub struct EventStore {
     pool: SqlitePool,
@@ -32,34 +31,5 @@ impl EventStore {
         .await?;
 
         Ok(())
-    }
-
-    pub async fn get_latest_position(
-        &self,
-        audiobook_id: Uuid,
-        user_id: Uuid,
-    ) -> Result<Option<i64>, sqlx::Error> {
-        let result: Option<(String,)> = sqlx::query_as(
-            r#"
-            SELECT payload
-            FROM events
-            WHERE topic = 'audiobook.progress'
-            ORDER BY created_at DESC
-            LIMIT 1
-            "#,
-        )
-        .fetch_optional(&self.pool)
-        .await?;
-
-        if let Some((payload_json,)) = result
-            && let Ok(EventPayload::AudiobookProgress(payload)) =
-                serde_json::from_str::<EventPayload>(&payload_json)
-            && payload.audiobook_id == audiobook_id
-            && payload.user_id == user_id
-        {
-            return Ok(Some(payload.position_seconds));
-        }
-
-        Ok(None)
     }
 }

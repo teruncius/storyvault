@@ -2,9 +2,8 @@ use crate::{
     AppState, Config,
     auth::auth_middleware,
     handlers::{
-        get_audiobook, get_audiobook_cover, get_audiobook_position, get_favicon, get_users,
-        health_check, index, list_audiobooks, login, logout, me, set_audiobook_position,
-        stream_audiobook,
+        get_audiobook, get_audiobook_cover, get_favicon, get_users, health_check, index,
+        list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
     },
 };
 use axum::{
@@ -33,7 +32,6 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
         .route("/audiobook", get(list_audiobooks))
         .route("/audiobook/{id}", get(get_audiobook))
         .route("/audiobook/{id}/cover", get(get_audiobook_cover))
-        .route("/audiobook/{id}/position", get(get_audiobook_position))
         .route("/audiobook/{id}/position", put(set_audiobook_position))
         .route("/audiobook/{id}/stream", get(stream_audiobook))
         .route("/user", get(get_users))

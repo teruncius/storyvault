@@ -10,7 +10,8 @@ use uuid::Uuid;
 use crate::{
     AppState,
     auth::AuthenticatedUser,
-    events::{AudiobookProgressPayload, Event, EventPayload, EventStore, ProgressType},
+    events::{AudiobookProgressPayload, Event, EventPayload, ProgressType},
+    iso8601::duration_to_seconds,
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -22,45 +23,6 @@ pub struct PositionResponse {
 pub struct SetPosition {
     pub event_type: String,
     pub position_iso: String,
-}
-
-fn seconds_to_iso(seconds: i64) -> String {
-    format!("PT{}S", seconds)
-}
-
-fn iso_to_seconds(iso: &str) -> Option<i64> {
-    // Simple parser for PT#S format
-    if iso.starts_with("PT") && iso.ends_with('S') {
-        let seconds_str = &iso[2..iso.len() - 1];
-        seconds_str.parse::<i64>().ok()
-    } else {
-        None
-    }
-}
-
-/// Get the current playback position for an audiobook.
-/// Returns ISO8601 duration string.
-pub async fn get_audiobook_position(
-    State(state): State<AppState>,
-    AuthenticatedUser(user): AuthenticatedUser,
-    Path(id): Path<Uuid>,
-) -> impl IntoResponse {
-    if !state.audiobooks.read().unwrap().contains_key(&id) {
-        return StatusCode::NOT_FOUND.into_response();
-    }
-
-    let event_store = EventStore::new(state.db_pool.clone());
-    let position_seconds = event_store
-        .get_latest_position(id, user.id)
-        .await
-        .unwrap_or(None)
-        .unwrap_or(0);
-
-    let response = PositionResponse {
-        position_iso: seconds_to_iso(position_seconds),
-    };
-
-    (StatusCode::OK, Json(response)).into_response()
 }
 
 /// Set the playback position for an audiobook.
@@ -76,7 +38,7 @@ pub async fn set_audiobook_position(
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid event type").into_response(),
     };
 
-    let position_seconds = match iso_to_seconds(&payload.position_iso) {
+    let position_seconds = match duration_to_seconds(&payload.position_iso) {
         Some(s) => s,
         None => return (StatusCode::BAD_REQUEST, "Invalid position format").into_response(),
     };

@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path as AxumPath, State},
+    extract::{Path, State},
     http::{HeaderMap, HeaderValue, StatusCode, header},
     response::{IntoResponse, Response},
 };
@@ -10,7 +10,7 @@ use crate::AppState;
 
 pub async fn stream_audiobook(
     State(state): State<AppState>,
-    AxumPath(id): AxumPath<Uuid>,
+    Path(id): Path<Uuid>,
     headers: HeaderMap,
 ) -> Response {
     let audio_path = {

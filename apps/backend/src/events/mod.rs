@@ -2,9 +2,8 @@ pub mod listener;
 pub mod queue;
 pub mod store;
 
-pub use listener::EventListener;
+pub use listener::EventBus;
 pub use queue::EventQueue;
-pub use store::EventStore;
 
 use std::fmt::Display;
 
