@@ -29,6 +29,7 @@ pub async fn login(
     let user = users.values().find(|u| u.email == payload.email);
 
     match user {
+        None => Err(StatusCode::UNAUTHORIZED),
         Some(user) => {
             // Verify password
             if !bcrypt::verify(&payload.password, &user.password_hash).unwrap_or(false) {
@@ -70,7 +71,6 @@ pub async fn login(
 
             Ok(response)
         }
-        None => Err(StatusCode::UNAUTHORIZED),
     }
 }
 
