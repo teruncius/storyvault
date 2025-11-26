@@ -1,5 +1,5 @@
-import { useAudiobooks } from "@storyvault/frontend/hooks/audiobooks";
-import { Audiobooks } from "./audiobooks";
+import { Audiobooks } from "@sv/fe/components/audiobooks";
+import { useAudiobooks } from "@sv/fe/hooks/audiobooks";
 
 export function HomePage() {
     const { data: audiobooks } = useAudiobooks();

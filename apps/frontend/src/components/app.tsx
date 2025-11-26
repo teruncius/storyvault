@@ -1,13 +1,18 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@storyvault/frontend/lib/query-client";
+import { queryClient } from "@sv/fe/lib/query-client";
 import type { PropsWithChildren } from "react";
-import { darkTheme } from "@storyvault/frontend/theme/dark.css";
-import { useAuth } from "@storyvault/frontend/hooks/user";
-import { BrowserRouter, Navigate, Outlet, Route } from "react-router";
-import { Routes } from "react-router";
-import { LoginPage } from "@storyvault/frontend/components/login-page";
-import { HomePage } from "@storyvault/frontend/components/home-page";
-import { Layout } from "@storyvault/frontend/components/layout";
+import { darkTheme } from "@sv/fe/theme/dark.css";
+import { useAuth } from "@sv/fe/hooks/user";
+import {
+    BrowserRouter,
+    Navigate,
+    Outlet,
+    Route,
+    Routes,
+} from "react-router-dom";
+import { LoginPage } from "@sv/fe/components/login-page";
+import { HomePage } from "@sv/fe/components/home-page";
+import { Layout } from "@sv/fe/components/layout";
 
 export function App() {
     return (
@@ -51,7 +56,7 @@ function ProtectedRoute() {
     }
 
     return (
-        <Layout>
+        <Layout user={user}>
             <Outlet />
         </Layout>
     );

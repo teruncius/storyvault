@@ -1,4 +1,4 @@
-import { vars } from "@storyvault/frontend/theme/vars.css";
+import { vars } from "@sv/fe/theme/vars.css";
 import { style } from "@vanilla-extract/css";
 
 export const container = style({
@@ -29,15 +29,35 @@ export const tile = style({
     flexDirection: "column",
     gap: "0.25rem",
     overflow: "hidden",
+    padding: 0,
+    background: "transparent",
+    border: 0,
+    cursor: "pointer",
+    ":hover": {
+        textDecoration: "underline",
+    },
 });
 
 export const title = style({
     fontWeight: "bold",
     textTransform: "uppercase",
     textOverflow: "ellipsis",
+    textDecoration: "inherit",
     overflow: "hidden",
     whiteSpace: "nowrap",
     color: vars.color.text,
+    fontSize: "0.75rem",
+});
+
+export const subtitle = style({
+    fontWeight: "normal",
+    textTransform: "capitalize",
+    textOverflow: "ellipsis",
+    textDecoration: "inherit",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    color: vars.color.text,
+    fontSize: "0.75rem",
 });
 
 export const image = style({

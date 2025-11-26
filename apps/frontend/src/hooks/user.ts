@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { User } from "@storyvault/frontend/types/user";
-import { HttpError } from "@storyvault/frontend/lib/query-client";
+import type { User } from "@sv/fe/types/user";
+import { HttpError } from "@sv/fe/lib/query-client";
 
 const AUTH_QUERY_KEY = "auth/me";
 

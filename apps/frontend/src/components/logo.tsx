@@ -1,6 +1,6 @@
-import logo from "@storyvault/frontend/assets/logo.webp";
-import * as styles from "@storyvault/frontend/components/logo.css";
-import { Link } from "react-router";
+import logo from "@sv/fe/assets/logo.webp";
+import * as styles from "@sv/fe/components/logo.css";
+import { Link } from "react-router-dom";
 
 export function Logo() {
     return (

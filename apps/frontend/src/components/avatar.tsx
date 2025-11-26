@@ -1,15 +1,14 @@
-import * as styles from "@storyvault/frontend/components/avatar.css";
+import * as styles from "@sv/fe/components/avatar.css";
 
 interface Props {
-    firstName: string;
-    lastName: string;
+    name: { firstName: string; lastName: string };
 }
 
-export function Avatar({ firstName, lastName }: Props) {
+export function Avatar({ name }: Props) {
     return (
         <div className={styles.avatar}>
-            <>{firstName[0]}</>
-            <>{lastName[0]}</>
+            <>{name.firstName[0]}</>
+            <>{name.lastName[0]}</>
         </div>
     );
 }

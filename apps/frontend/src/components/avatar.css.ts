@@ -1,4 +1,4 @@
-import { vars } from "@storyvault/frontend/theme/vars.css";
+import { vars } from "@sv/fe/theme/vars.css";
 import { style } from "@vanilla-extract/css";
 
 export const avatar = style({

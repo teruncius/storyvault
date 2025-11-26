@@ -1,4 +1,4 @@
-import { useLogin } from "@storyvault/frontend/hooks/user";
+import { useLogin } from "@sv/fe/hooks/user";
 import { useState } from "react";
 
 export function LoginPage() {

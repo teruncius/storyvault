@@ -1,5 +1,5 @@
 import { createTheme } from "@vanilla-extract/css";
-import { vars } from "@storyvault/frontend/theme/vars.css";
+import { vars } from "@sv/fe/theme/vars.css";
 
 export const darkTheme = createTheme(vars, {
     color: {
