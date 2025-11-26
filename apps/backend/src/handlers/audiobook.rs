@@ -24,10 +24,11 @@ pub struct AudiobookResponse {
     position_url: String,
     stream_url: String,
     position_iso: Option<String>,
+    duration_iso: Option<String>,
 }
 
 impl AudiobookResponse {
-    fn from_audiobook(book: &Audiobook, base_url: &str, position_seconds: Option<i64>) -> Self {
+    fn from_audiobook(book: &Audiobook, base_url: &str, position_seconds: Option<u64>) -> Self {
         AudiobookResponse {
             id: book.id,
             title: book.title.clone(),
@@ -38,6 +39,7 @@ impl AudiobookResponse {
             position_url: format!("{}/audiobook/{}/position", base_url, book.id),
             stream_url: format!("{}/audiobook/{}/stream", base_url, book.id),
             position_iso: position_seconds.map(seconds_to_duration),
+            duration_iso: book.duration_seconds.map(seconds_to_duration),
         }
     }
 }

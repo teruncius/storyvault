@@ -15,11 +15,6 @@ use crate::{
 };
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct PositionResponse {
-    pub position_iso: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct SetPosition {
     pub event_type: String,
     pub position_iso: String,

@@ -16,6 +16,8 @@ pub struct Audiobook {
     pub year: u32,
     #[serde(skip)]
     pub path: PathBuf,
+    #[serde(skip)]
+    pub duration_seconds: Option<u64>,
 }
 
 #[derive(Debug, Clone)]

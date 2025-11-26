@@ -50,7 +50,7 @@ pub struct AudiobookProgressPayload {
     pub audiobook_id: Uuid,
     pub user_id: Uuid,
     pub event_type: ProgressType,
-    pub position_seconds: i64,
+    pub position_seconds: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

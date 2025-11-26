@@ -8,7 +8,7 @@ use uuid::Uuid;
 pub struct ProjectionData {
     pub audiobook_id: Uuid,
     pub user_id: Uuid,
-    pub last_position_seconds: i64,
+    pub last_position_seconds: u64,
 }
 
 /// Projector that processes AudiobookProgress events and updates user progress
@@ -63,8 +63,8 @@ impl AudiobookUserProgressProjection {
         &self,
         audiobook_id: Uuid,
         user_id: Uuid,
-    ) -> Result<Option<i64>, sqlx::Error> {
-        let result: Option<(i64,)> = sqlx::query_as(
+    ) -> Result<Option<u64>, sqlx::Error> {
+        let result: Option<(u64,)> = sqlx::query_as(
             r#"
             SELECT last_position_seconds
             FROM audiobook_user_progress
@@ -76,15 +76,15 @@ impl AudiobookUserProgressProjection {
         .fetch_optional(&self.pool)
         .await?;
 
-        Ok(result.map(|(position,)| position))
+        Ok(result.map(|(position,)| position as u64))
     }
 
     /// Get all positions for a user, returning a map of audiobook_id -> position_seconds
     pub async fn get_all_positions(
         &self,
         user_id: Uuid,
-    ) -> Result<std::collections::HashMap<Uuid, i64>, sqlx::Error> {
-        let results: Vec<(String, i64)> = sqlx::query_as(
+    ) -> Result<std::collections::HashMap<Uuid, u64>, sqlx::Error> {
+        let results: Vec<(String, u64)> = sqlx::query_as(
             r#"
             SELECT audiobook_id, last_position_seconds
             FROM audiobook_user_progress
@@ -118,7 +118,7 @@ impl Projection<ProjectionData> for AudiobookUserProgressProjection {
         )
         .bind(data.audiobook_id.to_string())
         .bind(data.user_id.to_string())
-        .bind(data.last_position_seconds)
+        .bind(data.last_position_seconds as i64)
         .execute(&self.pool)
         .await?;
 
