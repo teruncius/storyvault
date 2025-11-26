@@ -7,5 +7,6 @@ export const darkTheme = createTheme(vars, {
         backdrop: "#09090b",
         background: "#18181b",
         border: "#fff",
+        primary: "#005f08",
     },
 });

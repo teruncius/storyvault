@@ -16,10 +16,10 @@ export const container = style({
             gridTemplateColumns: "repeat(4, 1fr)",
         },
         "screen and (min-width: 1024px)": {
-            gridTemplateColumns: "repeat(6, 1fr)",
+            gridTemplateColumns: "repeat(5, 1fr)",
         },
         "screen and (min-width: 1200px)": {
-            gridTemplateColumns: "repeat(8, 1fr)",
+            gridTemplateColumns: "repeat(6, 1fr)",
         },
     },
 });
@@ -29,9 +29,10 @@ export const tile = style({
     flexDirection: "column",
     gap: "0.25rem",
     overflow: "hidden",
-    padding: 0,
-    background: "transparent",
+    padding: "0.5rem",
+    background: vars.color.background,
     border: 0,
+    borderRadius: "0.5rem",
     cursor: "pointer",
     ":hover": {
         textDecoration: "underline",
@@ -64,4 +65,18 @@ export const image = style({
     width: "100%",
     objectFit: "cover",
     aspectRatio: "1 / 1",
+    borderRadius: "0.25rem",
+});
+
+export const progress = style({
+    width: "100%",
+    height: "0.5rem",
+    overflow: "hidden",
+    backgroundColor: vars.color.background,
+    borderRadius: "0.25rem",
+});
+
+export const progressFill = style({
+    height: "100%",
+    backgroundColor: vars.color.primary,
 });

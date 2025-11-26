@@ -6,4 +6,5 @@ export interface Audiobook {
     cover_url: string;
     stream_url: string;
     position_iso: string | null;
+    duration_iso: string;
 }

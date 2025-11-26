@@ -6,5 +6,6 @@ export const vars = createThemeContract({
         background: null,
         backdrop: null,
         border: null,
+        primary: null,
     },
 });
