@@ -28,7 +28,9 @@ export function Audiobooks(props: Props) {
                     />
                     <div className={styles.title}>{audiobook.title}</div>
                     <div className={styles.subtitle}>
-                        <>{audiobook.authors.join(", ")} - {audiobook.year}</>
+                        <>
+                            {audiobook.authors.join(", ")} - {audiobook.year}
+                        </>
                     </div>
                 </button>
             ))}
@@ -42,7 +44,10 @@ interface ProgressBarProps {
 }
 
 function ProgressBar({ position, duration }: ProgressBarProps) {
-    const width = (convertISO8601ToSeconds(position || "PT0S") / convertISO8601ToSeconds(duration)) * 100
+    const width =
+        (convertISO8601ToSeconds(position || "PT0S") /
+            convertISO8601ToSeconds(duration)) *
+        100;
     return (
         <div className={styles.progress}>
             <div

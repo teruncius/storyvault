@@ -18,6 +18,13 @@ export const list = style({
     gap: "0.75rem",
 });
 
+export const pathGroup = style({
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5rem",
+    marginBottom: "1rem",
+});
+
 export const item = style({
     padding: "1rem",
     border: `0`,
