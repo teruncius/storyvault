@@ -3,6 +3,7 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct MeResponse {
+    pub id: String,
     pub email: String,
     pub first_name: String,
     pub last_name: String,
@@ -12,6 +13,7 @@ pub struct MeResponse {
 impl From<&User> for MeResponse {
     fn from(user: &User) -> Self {
         MeResponse {
+            id: user.id.to_string(),
             email: user.email.clone(),
             first_name: user.first_name.clone(),
             last_name: user.last_name.clone(),

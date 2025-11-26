@@ -6,12 +6,12 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
     if !database_url.starts_with("sqlite::memory:") {
         let path_str = database_url.trim_start_matches("sqlite://");
         let path = Path::new(path_str);
-        if let Some(parent) = path.parent() {
-            if !parent.exists() {
-                std::fs::create_dir_all(parent).unwrap_or_else(|e| {
-                    eprintln!("Failed to create database directory: {}", e);
-                });
-            }
+        if let Some(parent) = path.parent()
+            && !parent.exists()
+        {
+            std::fs::create_dir_all(parent).unwrap_or_else(|e| {
+                eprintln!("Failed to create database directory: {}", e);
+            });
         }
 
         if !path.exists() {

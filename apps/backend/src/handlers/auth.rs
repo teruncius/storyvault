@@ -7,18 +7,13 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use chrono::{Duration, Utc};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use uuid::Uuid;
 
 #[derive(Debug, Deserialize)]
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct LoginResponse {
-    pub message: String,
 }
 
 pub async fn login(
@@ -65,10 +60,7 @@ pub async fn login(
                 SESSION_COOKIE_NAME, session_id, max_age_secs
             );
 
-            let mut response = axum::Json(LoginResponse {
-                message: "Login successful".to_string(),
-            })
-            .into_response();
+            let mut response = axum::response::NoContent.into_response();
 
             response.headers_mut().insert(
                 axum::http::header::SET_COOKIE,

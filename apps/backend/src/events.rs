@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, SqlitePool};
@@ -12,13 +14,13 @@ pub enum EventType {
     Seek,
 }
 
-impl ToString for EventType {
-    fn to_string(&self) -> String {
+impl Display for EventType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            EventType::Play => "PLAY".to_string(),
-            EventType::Pause => "PAUSE".to_string(),
-            EventType::Stop => "STOP".to_string(),
-            EventType::Seek => "SEEK".to_string(),
+            EventType::Play => write!(f, "PLAY"),
+            EventType::Pause => write!(f, "PAUSE"),
+            EventType::Stop => write!(f, "STOP"),
+            EventType::Seek => write!(f, "SEEK"),
         }
     }
 }
