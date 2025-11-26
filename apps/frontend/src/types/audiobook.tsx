@@ -5,4 +5,5 @@ export interface Audiobook {
     year: string;
     cover_url: string;
     stream_url: string;
+    position_iso: string | null;
 }

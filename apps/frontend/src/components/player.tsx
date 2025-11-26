@@ -2,32 +2,30 @@ import { useAudiobook } from "@sv/fe/hooks/audiobooks";
 import { useStore } from "@sv/fe/hooks/store";
 import * as styles from "@sv/fe/components/player.css";
 import { useCallback, useEffect, useRef } from "react";
-import {
-    EventType,
-    useAudiobookPosition,
-    useUpdatePosition,
-} from "@sv/fe/hooks/progress";
+import { EventType, useUpdatePosition } from "@sv/fe/hooks/progress";
+import { convertISO8601ToSeconds } from "@sv/fe/lib/iso8601";
 
 export function Player() {
     const { currentAudiobook } = useStore();
     const { data: audiobook } = useAudiobook(currentAudiobook);
-    const { data: position } = useAudiobookPosition(currentAudiobook);
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const mutation = useUpdatePosition();
 
-    const setPosition = useCallback(() => {
+    const seekToPosition = useCallback(() => {
         if (!audioRef.current) {
             console.log("No audio ref");
             return;
         }
-        if (!position) {
+        if (!audiobook?.position_iso) {
             console.log("No position");
             return;
         }
-        console.log("Setting position to", position);
-        audioRef.current.currentTime = position;
-    }, [position]);
+        console.log("Setting position to", audiobook.position_iso);
+        audioRef.current.currentTime = convertISO8601ToSeconds(
+            audiobook.position_iso,
+        );
+    }, [audiobook]);
 
     const sendPosition = useCallback(
         (event_type: EventType) => {
@@ -50,7 +48,7 @@ export function Player() {
         };
     }, [sendPosition]);
 
-    if (!audiobook || !position) {
+    if (!audiobook) {
         return null;
     }
 
@@ -76,7 +74,7 @@ export function Player() {
                 onPause={() => sendPosition(EventType.PAUSE)}
                 onSeeked={() => sendPosition(EventType.SEEK)}
                 onEnded={() => sendPosition(EventType.STOP)}
-                onLoadedMetadata={setPosition}
+                onLoadedMetadata={seekToPosition}
             ></audio>
         </figure>
     );

@@ -40,5 +40,18 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
     .execute(&pool)
     .await?;
 
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS audiobook_user_progress (
+            audiobook_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            last_position_seconds INTEGER NOT NULL,
+            PRIMARY KEY (audiobook_id, user_id)
+        );
+        "#,
+    )
+    .execute(&pool)
+    .await?;
+
     Ok(pool)
 }

@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path as AxumPath, State},
+    extract::{Path, State},
     http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
@@ -7,10 +7,7 @@ use uuid::Uuid;
 
 use crate::AppState;
 
-pub async fn get_audiobook_cover(
-    State(state): State<AppState>,
-    AxumPath(id): AxumPath<Uuid>,
-) -> Response {
+pub async fn get_audiobook_cover(State(state): State<AppState>, Path(id): Path<Uuid>) -> Response {
     let book_path = {
         let books = state.audiobooks.read().unwrap();
         books.get(&id).map(|b| b.path.clone())

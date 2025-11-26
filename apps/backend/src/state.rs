@@ -13,8 +13,7 @@ pub struct Audiobook {
     pub id: Uuid,
     pub title: String,
     pub author: String,
-    #[serde(default)]
-    pub year: Option<u32>,
+    pub year: u32,
     #[serde(skip)]
     pub path: PathBuf,
 }

@@ -1,51 +1,65 @@
+use super::Event;
 use super::store::EventStore;
-use super::{Event, EventPayload};
+use crate::projections::Projector;
 use sqlx::SqlitePool;
 use tokio::sync::mpsc;
 
-/// Event listener that processes events from the queue
-pub struct EventListener {
+/// Event bus that processes events from the queue
+pub struct EventBus {
     receiver: mpsc::UnboundedReceiver<Event>,
     event_store: EventStore,
+    projectors: Vec<Box<dyn Projector>>,
 }
 
-impl EventListener {
-    /// Create a new event listener
+impl EventBus {
+    /// Create a new event bus
     pub fn new(receiver: mpsc::UnboundedReceiver<Event>, db_pool: SqlitePool) -> Self {
+        let projectors: Vec<Box<dyn Projector>> = vec![Box::new(
+            crate::projections::AudiobookUserProgressProjector::new(db_pool.clone()),
+        )];
+
         Self {
             receiver,
-            event_store: EventStore::new(db_pool),
+            event_store: EventStore::new(db_pool.clone()),
+            projectors,
         }
     }
 
     /// Start listening for events and processing them
     pub async fn start(mut self) {
-        println!("Event listener started");
+        println!("Event bus started");
 
         while let Some(event) = self.receiver.recv().await {
-            if let Err(e) = self.process_event(event).await {
+            if let Err(e) = self.process_event(&event).await {
                 eprintln!("Failed to process event: {}", e);
             }
         }
 
-        println!("Event listener stopped");
+        println!("Event bus stopped");
     }
 
-    /// Process a single event by storing it in the database
-    async fn process_event(&self, event: Event) -> Result<(), String> {
-        match &event.payload {
-            EventPayload::AudiobookProgress(payload) => {
-                println!(
-                    "Processing event: {} for audiobook {} user {} at position {}",
-                    event.event_id, payload.audiobook_id, payload.user_id, payload.position_seconds
-                );
-            }
-        }
+    /// Process a single event by storing it in the database and updating projections
+    async fn process_event(&self, event: &Event) -> Result<(), String> {
+        println!(
+            "Processing event: {} topic: {}",
+            event.event_id,
+            event.payload.topic()
+        );
 
+        // Store the event in the event store
         self.event_store
-            .record_event(&event)
+            .record_event(event)
             .await
             .map_err(|e| format!("Database error: {}", e))?;
+
+        // Process projections
+        for projector in &self.projectors {
+            if projector.handles(event)
+                && let Err(e) = projector.project(event).await
+            {
+                eprintln!("Failed to project event {}: {}", event.event_id, e);
+            }
+        }
 
         println!("Event {} processed successfully", event.event_id);
         Ok(())
