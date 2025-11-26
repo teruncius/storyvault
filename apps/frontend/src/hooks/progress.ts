@@ -1,5 +1,5 @@
 import { HttpError } from "@sv/fe/lib/query-client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { convertSecondsToISO8601 } from "../lib/iso8601";
 
 export const EventType = {
@@ -18,6 +18,7 @@ interface UpdatePositionRequest {
 }
 
 export function useUpdatePosition() {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({
             id,
@@ -42,6 +43,12 @@ export function useUpdatePosition() {
             if (!response.ok) {
                 throw HttpError.fromResponse(response);
             }
+        },
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["audiobooks", variables.id],
+            });
+            queryClient.invalidateQueries({ queryKey: ["audiobooks"] });
         },
     });
 }
