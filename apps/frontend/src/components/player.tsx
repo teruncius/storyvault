@@ -62,7 +62,7 @@ export function Player() {
                 />
                 <div className={styles.title}>{audiobook.title}</div>
                 <div className={styles.subtitle}>
-                    {audiobook.author}, {audiobook.year}
+                    {audiobook.authors.join(", ")} - {audiobook.year}
                 </div>
             </figcaption>
             <audio

@@ -17,7 +17,7 @@ use crate::projections::audiobook_user_progress::AudiobookUserProgressProjection
 pub struct AudiobookResponse {
     id: Uuid,
     title: String,
-    author: String,
+    authors: Vec<String>,
     year: u32,
     detail_url: String,
     cover_url: String,
@@ -32,7 +32,7 @@ impl AudiobookResponse {
         AudiobookResponse {
             id: book.id,
             title: book.title.clone(),
-            author: book.author.clone(),
+            authors: book.authors.clone(),
             year: book.year,
             detail_url: format!("{}/audiobook/{}", base_url, book.id),
             cover_url: format!("{}/audiobook/{}/cover", base_url, book.id),
