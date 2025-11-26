@@ -1,4 +1,5 @@
 use crate::Config;
+use crate::events::EventQueue;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
@@ -41,9 +42,10 @@ pub struct AppState {
     pub sessions: Arc<RwLock<HashMap<Uuid, Session>>>,
     pub users: Arc<RwLock<HashMap<Uuid, User>>>,
     pub db_pool: SqlitePool,
+    pub event_queue: EventQueue,
 }
 
-pub fn build_state(config: &Config, db_pool: SqlitePool) -> AppState {
+pub fn build_state(config: &Config, db_pool: SqlitePool, event_queue: EventQueue) -> AppState {
     let mut users = HashMap::new();
 
     let alice_id = Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap();
@@ -81,5 +83,6 @@ pub fn build_state(config: &Config, db_pool: SqlitePool) -> AppState {
         sessions: Arc::new(RwLock::new(HashMap::new())),
         users: Arc::new(RwLock::new(users)),
         db_pool,
+        event_queue,
     }
 }

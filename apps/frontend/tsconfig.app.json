@@ -24,7 +24,7 @@
         /* Imports */
         "baseUrl": ".",
         "paths": {
-            "@storyvault/frontend/*": ["./src/*"]
+            "@sv/fe/*": ["./src/*"]
         }
     },
     "include": ["src"]

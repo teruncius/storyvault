@@ -4,4 +4,5 @@ export interface Audiobook {
     author: string;
     year: string;
     cover_url: string;
+    stream_url: string;
 }

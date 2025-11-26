@@ -1,35 +1,37 @@
-import * as styles from "@storyvault/frontend/components/layout.css";
-import { Avatar } from "@storyvault/frontend/components/avatar";
-import { useAuth } from "@storyvault/frontend/hooks/user";
+import * as styles from "@sv/fe/components/layout.css";
+import { Avatar } from "@sv/fe/components/avatar";
 import type { PropsWithChildren } from "react";
-import { Logo } from "@storyvault/frontend/components/logo";
-import { useLogout } from "@storyvault/frontend/hooks/user";
+import { Logo } from "@sv/fe/components/logo";
+import { useLogout } from "@sv/fe/hooks/user";
+import { Player } from "@sv/fe/components/player";
+import type { User } from "@sv/fe/types/user";
 
-export function Layout({ children }: PropsWithChildren) {
-    const { data: user } = useAuth();
+interface Props extends PropsWithChildren {
+    user: User;
+}
+
+export function Layout({ children, user }: Props) {
     const logout = useLogout();
     return (
         <div className={styles.container}>
             <header className={styles.header}>
                 <div className={styles.center.header}>
-                    <div className={styles.xxx.left}>
+                    <div className={styles.area.left}>
                         <Logo />
                     </div>
-                    <div className={styles.xxx.right}>
-                        {user && (
-                            <>
-                                <button
-                                    className={styles.logout}
-                                    onClick={() => logout.mutate()}
-                                >
-                                    Logout
-                                </button>
-                                <Avatar
-                                    firstName={user.first_name}
-                                    lastName={user.last_name}
-                                />
-                            </>
-                        )}
+                    <div className={styles.area.right}>
+                        <button
+                            className={styles.logout}
+                            onClick={() => logout.mutate()}
+                        >
+                            Logout
+                        </button>
+                        <Avatar
+                            name={{
+                                firstName: user.first_name,
+                                lastName: user.last_name,
+                            }}
+                        />
                     </div>
                 </div>
             </header>
@@ -37,7 +39,9 @@ export function Layout({ children }: PropsWithChildren) {
                 <div className={styles.center.main}>{children}</div>
             </main>
             <footer className={styles.footer}>
-                <div className={styles.center.footer}></div>
+                <div className={styles.center.footer}>
+                    <Player />
+                </div>
             </footer>
         </div>
     );

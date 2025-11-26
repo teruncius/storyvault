@@ -1,4 +1,7 @@
-use axum::{Json, extract::State};
+use axum::{
+    Json,
+    extract::{Path, State},
+};
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -37,5 +40,16 @@ pub async fn list_audiobooks(State(state): State<AppState>) -> Json<Vec<Audioboo
         .values()
         .map(|b| AudiobookResponse::from_audiobook(b, base_url))
         .collect();
+    Json(response)
+}
+
+pub async fn get_audiobook(
+    State(state): State<AppState>,
+    Path(id): Path<Uuid>,
+) -> Json<AudiobookResponse> {
+    let books = state.audiobooks.read().unwrap();
+    let book = books.get(&id).unwrap();
+    let base_url = &state.config.url.base;
+    let response = AudiobookResponse::from_audiobook(book, base_url);
     Json(response)
 }

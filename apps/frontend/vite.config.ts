@@ -8,7 +8,7 @@ export default defineConfig({
     plugins: [react(), vanillaExtractPlugin()],
     resolve: {
         alias: {
-            "@storyvault/frontend": path.resolve(__dirname, "./src"),
+            "@sv/fe": path.resolve(__dirname, "./src"),
         },
     },
 });

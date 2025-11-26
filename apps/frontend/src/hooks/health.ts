@@ -1,4 +1,4 @@
-import { HttpError } from "@storyvault/frontend/lib/query-client";
+import { HttpError } from "@sv/fe/lib/query-client";
 import { useQuery } from "@tanstack/react-query";
 
 interface HealthResponse {

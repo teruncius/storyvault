@@ -42,7 +42,16 @@ async fn main() {
         std::process::exit(1);
     });
 
-    let shared_state = build_state(&config, db_pool);
+    // Create event queue and listener
+    let (event_queue, receiver) = events::EventQueue::new();
+    let listener = events::EventListener::new(receiver, db_pool.clone());
+
+    // Spawn background task to process events
+    tokio::spawn(async move {
+        listener.start().await;
+    });
+
+    let shared_state = build_state(&config, db_pool, event_queue);
 
     // Initial scan
     let audiobooks_dir = config.audiobooks_dir();

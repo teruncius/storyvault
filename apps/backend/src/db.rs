@@ -31,10 +31,8 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
         r#"
         CREATE TABLE IF NOT EXISTS events (
             event_id TEXT PRIMARY KEY,
-            audiobook_id TEXT NOT NULL,
-            user_id TEXT NOT NULL,
-            event_type TEXT NOT NULL,
-            position_seconds INTEGER NOT NULL,
+            topic TEXT NOT NULL,
+            payload TEXT NOT NULL,
             created_at DATETIME NOT NULL
         );
         "#,

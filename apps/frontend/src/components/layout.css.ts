@@ -1,4 +1,4 @@
-import { vars } from "@storyvault/frontend/theme/vars.css";
+import { vars } from "@sv/fe/theme/vars.css";
 import { style, styleVariants } from "@vanilla-extract/css";
 
 export const container = style({
@@ -62,7 +62,7 @@ export const center = styleVariants({
     },
 });
 
-export const xxx = styleVariants({
+export const area = styleVariants({
     left: {
         display: "flex",
         flexDirection: "row",

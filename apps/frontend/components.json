@@ -12,11 +12,11 @@
     },
     "iconLibrary": "lucide",
     "aliases": {
-        "components": "@storyvault/frontend/components",
-        "utils": "@storyvault/frontend/lib/utils",
-        "ui": "@storyvault/frontend/components/ui",
-        "lib": "@storyvault/frontend/lib",
-        "hooks": "@storyvault/frontend/hooks"
+        "components": "@sv/fe/components",
+        "utils": "@sv/fe/lib/utils",
+        "ui": "@sv/fe/components/ui",
+        "lib": "@sv/fe/lib",
+        "hooks": "@sv/fe/hooks"
     },
     "registries": {}
 }
