@@ -6,6 +6,7 @@ import { useLogout } from "@sv/fe/hooks/user";
 import { Player } from "@sv/fe/components/player";
 import type { User } from "@sv/fe/types/user";
 import { Link } from "react-router-dom";
+import { useTheme } from "@sv/fe/components/theme";
 
 interface Props extends PropsWithChildren {
     user: User;
@@ -13,6 +14,7 @@ interface Props extends PropsWithChildren {
 
 export function Layout({ children, user }: Props) {
     const logout = useLogout();
+    const { toggle, icon } = useTheme();
     return (
         <div className={styles.container}>
             <header className={styles.header}>
@@ -41,6 +43,12 @@ export function Layout({ children, user }: Props) {
                             </div>
                             <div className={styles.userEmail}>{user.email}</div>
                         </div>
+                        <button
+                            className={styles.toggleTheme}
+                            onClick={toggle}
+                        >
+                            {icon}
+                        </button>
                         <button
                             className={styles.logout}
                             onClick={() => logout.mutate()}
