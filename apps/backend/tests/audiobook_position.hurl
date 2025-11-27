@@ -1,7 +1,7 @@
 # Test audiobook position endpoint
 
 ### Login first to get session cookie
-POST http://localhost:3000/auth/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -12,14 +12,14 @@ Content-Type: application/json
 HTTP 200
 
 ### Get audiobook position (Moby Dick)
-GET http://localhost:3000/audiobook/994c2844-c63f-85b8-e150-880099884444/position
+GET http://localhost:3000/api/audiobook/994c2844-c63f-85b8-e150-880099884444/position
 
 HTTP 200
 [Asserts]
 jsonpath "$.position_iso" != null
 
 ### Set audiobook position (Moby Dick)
-PUT http://localhost:3000/audiobook/994c2844-c63f-85b8-e150-880099884444/position
+PUT http://localhost:3000/api/audiobook/994c2844-c63f-85b8-e150-880099884444/position
 Content-Type: application/json
 
 {
@@ -30,13 +30,13 @@ Content-Type: application/json
 HTTP 200
 
 ### Get audiobook position after setting
-GET http://localhost:3000/audiobook/994c2844-c63f-85b8-e150-880099884444/position
+GET http://localhost:3000/api/audiobook/994c2844-c63f-85b8-e150-880099884444/position
 
 HTTP 200
 [Asserts]
 jsonpath "$.position_iso" == "PT3600S"
 
 ### Get audiobook position with invalid UUID
-GET http://localhost:3000/audiobook/00000000-0000-0000-0000-000000000000/position
+GET http://localhost:3000/api/audiobook/00000000-0000-0000-0000-000000000000/position
 
 HTTP 404

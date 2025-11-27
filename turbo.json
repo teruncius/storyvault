@@ -3,7 +3,12 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", "target/**"],
+      "env": ["NODE_ENV"]
+    },
+    "backend#build": {
+      "dependsOn": ["^frontend#build"],
+      "outputs": ["target/**"],
       "env": ["NODE_ENV"]
     },
     "dev": {

@@ -1,6 +1,7 @@
 use crate::{
     AppState, Config,
     auth::auth_middleware,
+    frontend::static_handler,
     handlers::{
         get_audiobook, get_audiobook_cover, get_favicon, get_problems, get_users, health_check,
         index, list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
@@ -22,22 +23,22 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
 
     // Public routes (no authentication required)
     let public_router = Router::new()
-        .route("/", get(index))
-        .route("/favicon.ico", get(get_favicon))
-        .route("/health", get(health_check))
-        .route("/auth/login", post(login));
+        .route("/api", get(index))
+        .route("/api/favicon.ico", get(get_favicon))
+        .route("/api/health", get(health_check))
+        .route("/api/auth/login", post(login));
 
     // Protected routes (authentication required)
     let protected_router = Router::new()
-        .route("/audiobook", get(list_audiobooks))
-        .route("/audiobook/{id}", get(get_audiobook))
-        .route("/audiobook/{id}/cover", get(get_audiobook_cover))
-        .route("/audiobook/{id}/position", put(set_audiobook_position))
-        .route("/audiobook/{id}/stream", get(stream_audiobook))
-        .route("/user", get(get_users))
-        .route("/auth/logout", post(logout))
-        .route("/auth/me", get(me))
-        .route("/problem", get(get_problems))
+        .route("/api/audiobook", get(list_audiobooks))
+        .route("/api/audiobook/{id}", get(get_audiobook))
+        .route("/api/audiobook/{id}/cover", get(get_audiobook_cover))
+        .route("/api/audiobook/{id}/position", put(set_audiobook_position))
+        .route("/api/audiobook/{id}/stream", get(stream_audiobook))
+        .route("/api/user", get(get_users))
+        .route("/api/auth/logout", post(logout))
+        .route("/api/auth/me", get(me))
+        .route("/api/problem", get(get_problems))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
             auth_middleware,
@@ -48,6 +49,7 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
         .merge(protected_router)
         .layer(cors)
         .with_state(state)
+        .fallback(static_handler)
 }
 
 fn build_cors(config: &Config) -> CorsLayer {

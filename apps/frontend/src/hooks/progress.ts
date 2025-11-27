@@ -27,7 +27,7 @@ export function useUpdatePosition() {
         }: UpdatePositionRequest) => {
             console.log(id, event_type, position);
             const response = await fetch(
-                `http://localhost:3000/audiobook/${id}/position`,
+                `http://localhost:3000/api/audiobook/${id}/position`,
                 {
                     method: "PUT",
                     headers: {
