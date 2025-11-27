@@ -61,13 +61,6 @@ export const subtitle = style({
     fontSize: "0.75rem",
 });
 
-export const image = style({
-    width: "100%",
-    objectFit: "cover",
-    aspectRatio: "1 / 1",
-    borderRadius: "0.25rem",
-});
-
 export const progress = style({
     width: "100%",
     height: "0.5rem",

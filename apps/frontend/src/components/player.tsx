@@ -4,6 +4,7 @@ import * as styles from "@sv/fe/components/player.css";
 import { useCallback, useEffect, useRef } from "react";
 import { EventType, useUpdatePosition } from "@sv/fe/hooks/progress";
 import { convertISO8601ToSeconds } from "@sv/fe/lib/iso8601";
+import { AudiobookCover } from "@sv/fe/components/audiobook-cover";
 
 export function Player() {
     const { currentAudiobook } = useStore();
@@ -55,10 +56,11 @@ export function Player() {
     return (
         <figure className={styles.container}>
             <figcaption className={styles.caption}>
-                <img
-                    className={styles.image}
-                    src={audiobook.cover_url}
-                    alt={audiobook.title}
+                <AudiobookCover
+                    cover_url={audiobook.cover_url}
+                    title={audiobook.title}
+                    width={40}
+                    style={{ gridArea: "logo" }}
                 />
                 <div className={styles.title}>{audiobook.title}</div>
                 <div className={styles.subtitle}>

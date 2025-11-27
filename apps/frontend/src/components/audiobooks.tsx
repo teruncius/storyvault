@@ -1,6 +1,7 @@
-import * as styles from "@sv/fe/components/audiobooks.css";
-import { useStore } from "@sv/fe/hooks/store";
+import { AudiobookCover } from "@sv/fe/components/audiobook-cover";
 import { convertISO8601ToSeconds } from "@sv/fe/lib/iso8601";
+import { useStore } from "@sv/fe/hooks/store";
+import * as styles from "@sv/fe/components/audiobooks.css";
 import type { Audiobook } from "@sv/fe/types/audiobook";
 
 interface Props {
@@ -17,10 +18,10 @@ export function Audiobooks(props: Props) {
                     key={audiobook.id}
                     onClick={() => play(audiobook.id)}
                 >
-                    <img
-                        src={audiobook.cover_url}
-                        alt={audiobook.title}
-                        className={styles.image}
+                    <AudiobookCover
+                        cover_url={audiobook.cover_url}
+                        title={audiobook.title}
+                        width={200}
                     />
                     <ProgressBar
                         position={audiobook.position_iso}
