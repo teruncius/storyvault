@@ -1,7 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@sv/fe/lib/query-client";
-import type { PropsWithChildren } from "react";
-import { darkTheme } from "@sv/fe/theme/dark.css";
 import { useAuth } from "@sv/fe/hooks/user";
 import {
     BrowserRouter,
@@ -15,6 +13,7 @@ import { HomePage } from "@sv/fe/components/home-page";
 import { ProblemPage } from "@sv/fe/components/problem-page";
 import { Layout } from "@sv/fe/components/layout";
 import { LoadingPage } from "@sv/fe/components/loading-page";
+import { ThemeProvider } from "@sv/fe/components/theme";
 
 export function App() {
     return (
@@ -24,10 +23,6 @@ export function App() {
             </ThemeProvider>
         </QueryClientProvider>
     );
-}
-
-function ThemeProvider({ children }: PropsWithChildren) {
-    return <div className={darkTheme}>{children}</div>;
 }
 
 function Content() {

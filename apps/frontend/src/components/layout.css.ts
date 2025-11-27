@@ -95,6 +95,17 @@ export const navLink = style({
     },
 });
 
+export const toggleTheme = style({
+    cursor: "pointer",
+    background: "transparent",
+    border: `1px solid ${vars.color.border}`,
+    color: vars.color.text,
+    fontSize: "1rem",
+    fontWeight: "bold",
+    padding: "0.5rem",
+    borderRadius: "0.25rem",
+});
+
 export const logout = style({
     cursor: "pointer",
     background: "transparent",
