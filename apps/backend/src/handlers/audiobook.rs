@@ -58,7 +58,9 @@ pub async fn list_audiobooks(
         .unwrap_or_default();
 
     // Clone the books we need, then drop the lock
-    let books: Vec<Audiobook> = { state.audiobooks.read().unwrap().values().cloned().collect() };
+    let mut books: Vec<Audiobook> =
+        { state.audiobooks.read().unwrap().values().cloned().collect() };
+    books.sort_by(|a, b| a.title.cmp(&b.title));
 
     let response: Vec<AudiobookResponse> = books
         .iter()
