@@ -78,10 +78,6 @@ export const button = style({
     transition: "opacity 0.2s, transform 0.1s",
     marginTop: "0.5rem",
 
-    ":hover": {
-        opacity: 0.9,
-    },
-
     ":active": {
         transform: "scale(0.98)",
     },

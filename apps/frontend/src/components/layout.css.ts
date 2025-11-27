@@ -75,6 +75,7 @@ export const area = styleVariants({
         display: "flex",
         flexDirection: "row",
         gap: "1rem",
+        alignItems: "center",
     },
 });
 
@@ -97,8 +98,39 @@ export const navLink = style({
 export const logout = style({
     cursor: "pointer",
     background: "transparent",
-    border: "none",
+    border: `1px solid ${vars.color.border}`,
     color: vars.color.text,
     fontSize: "1rem",
     fontWeight: "bold",
+    padding: "0.5rem 1rem 0.5rem 1rem",
+    borderRadius: "0.25rem",
+});
+
+export const userInfo = style({
+    display: "grid",
+    gridTemplateAreas: `
+        "avatar name"
+        "avatar email"
+    `,
+    gap: "0 0.5rem",
+});
+
+export const avatar = style({
+    gridArea: "avatar",
+});
+
+export const userName = style({
+    color: vars.color.text,
+    fontSize: "0.875rem",
+    fontWeight: "bold",
+    gridArea: "name",
+    alignSelf: "end",
+});
+
+export const userEmail = style({
+    color: vars.color.text,
+    fontSize: "0.75rem",
+    opacity: 0.7,
+    gridArea: "email",
+    alignSelf: "start",
 });
