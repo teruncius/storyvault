@@ -14,6 +14,7 @@ import { LoginPage } from "@sv/fe/components/login-page";
 import { HomePage } from "@sv/fe/components/home-page";
 import { ProblemPage } from "@sv/fe/components/problem-page";
 import { Layout } from "@sv/fe/components/layout";
+import { LoadingPage } from "@sv/fe/components/loading-page";
 
 export function App() {
     return (
@@ -30,8 +31,12 @@ function ThemeProvider({ children }: PropsWithChildren) {
 }
 
 function Content() {
-    const { data: user } = useAuth();
+    const { data: user, isLoading } = useAuth();
     const login = user ? <Navigate to="/" /> : <LoginPage />;
+
+    if (isLoading) {
+        return <LoadingPage />;
+    }
 
     return (
         <BrowserRouter>
@@ -50,7 +55,7 @@ function ProtectedRoute() {
     const { data: user, isLoading } = useAuth();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <LoadingPage />;
     }
 
     if (!user) {
