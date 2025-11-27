@@ -4,6 +4,7 @@ server:
 cors:
   allowed_origins:
     - http://localhost:5173
+    - http://localhost:3000
 url:
   base: http://localhost:3000
 vault: data/

@@ -1,12 +1,12 @@
 # Test audiobook endpoint
 
 ### Try to access audiobook list without authentication (should fail)
-GET http://localhost:3000/audiobook
+GET http://localhost:3000/api/audiobook
 
 HTTP 401
 
 ### Login first to get session cookie
-POST http://localhost:3000/auth/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 HTTP 200
 
 ### Get all audiobooks
-GET http://localhost:3000/audiobook
+GET http://localhost:3000/api/audiobook
 
 HTTP 200
 [Asserts]

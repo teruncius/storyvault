@@ -9,7 +9,7 @@ export function useHealth() {
     return useQuery({
         queryKey: ["health"],
         queryFn: async () => {
-            const response = await fetch("http://localhost:3000/health", {
+            const response = await fetch("http://localhost:3000/api/health", {
                 credentials: "include",
             });
             if (!response.ok) {

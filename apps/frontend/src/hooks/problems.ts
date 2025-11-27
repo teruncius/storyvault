@@ -5,7 +5,7 @@ export function useProblems() {
     return useQuery({
         queryKey: ["problems"],
         queryFn: async () => {
-            const response = await fetch("http://localhost:3000/problem", {
+            const response = await fetch("http://localhost:3000/api/problem", {
                 credentials: "include",
             });
             if (!response.ok) {

@@ -1,12 +1,12 @@
 # Test user endpoint
 
 ### Try to access user list without authentication (should fail)
-GET http://localhost:3000/user
+GET http://localhost:3000/api/user
 
 HTTP 401
 
 ### Login first to get session cookie
-POST http://localhost:3000/auth/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 HTTP 200
 
 ### Get all users
-GET http://localhost:3000/user
+GET http://localhost:3000/api/user
 
 HTTP 200
 [Asserts]

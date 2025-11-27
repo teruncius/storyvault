@@ -15,6 +15,7 @@ mod app;
 mod auth;
 mod db;
 mod events;
+mod frontend;
 mod handlers;
 mod iso8601;
 mod projections;
@@ -71,7 +72,7 @@ async fn main() {
 
 async fn build_server(app: Router, config: &Config) {
     let addr = config.socket_addr();
-    println!("listening on {}", addr);
+    println!("startet server on http://{}/", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

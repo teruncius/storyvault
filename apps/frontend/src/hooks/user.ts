@@ -8,7 +8,7 @@ export function useAuth() {
     return useQuery({
         queryKey: [AUTH_QUERY_KEY],
         queryFn: async () => {
-            const response = await fetch("http://localhost:3000/auth/me", {
+            const response = await fetch("http://localhost:3000/api/auth/me", {
                 credentials: "include",
             });
             if (response.status == 401) {
@@ -31,7 +31,7 @@ export function useLogin() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ email, password }: LoginInput) => {
-            const response = await fetch("http://localhost:3000/auth/login", {
+            const response = await fetch("http://localhost:3000/api/auth/login", {
                 method: "POST",
                 body: JSON.stringify({ email, password }),
                 headers: {
@@ -53,7 +53,7 @@ export function useLogout() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async () => {
-            const response = await fetch("http://localhost:3000/auth/logout", {
+            const response = await fetch("http://localhost:3000/api/auth/logout", {
                 method: "POST",
                 credentials: "include",
             });

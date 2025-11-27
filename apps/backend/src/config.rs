@@ -39,7 +39,23 @@ pub struct DatabaseConfig {
 impl Config {
     pub fn from_file(path: &Path) -> Result<Self, Box<dyn std::error::Error>> {
         let content = fs::read_to_string(path)?;
-        let config: Config = serde_yaml::from_str(&content)?;
+        let mut config: Config = serde_yaml::from_str(&content)?;
+
+        let config_dir = path.parent().unwrap_or_else(|| Path::new("."));
+
+        if config.vault.is_relative() {
+            config.vault = config_dir.join(&config.vault);
+        }
+
+        if let Some(db_path_str) = config.database.url.strip_prefix("sqlite://")
+            && db_path_str != ":memory:"
+            && let db_path = Path::new(db_path_str)
+            && db_path.is_relative()
+        {
+            let new_db_path = config_dir.join(db_path);
+            config.database.url = format!("sqlite://{}", new_db_path.display());
+        }
+
         // Validate configuration immediately
         config
             .validate()
