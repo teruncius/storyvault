@@ -126,17 +126,21 @@ pub fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
             }
         };
 
-        // Try to extract duration - required for valid audiobook
-        let duration = match get_audio_duration(&audio_path) {
-            Some(d) => d,
-            None => {
-                entry_problems.push(ScanProblem {
-                    path: audio_path.clone(),
-                    problem_type: ScanProblemType::UnableToExtractDuration,
-                    message: format!("Unable to extract duration from {:?}", audio_path),
-                });
-                0
+        // Try to extract duration
+        let duration = if audio_path.exists() {
+            match get_audio_duration(&audio_path) {
+                Some(d) => d,
+                None => {
+                    entry_problems.push(ScanProblem {
+                        path: audio_path.clone(),
+                        problem_type: ScanProblemType::UnableToExtractDuration,
+                        message: format!("Unable to extract duration from {:?}", audio_path),
+                    });
+                    0
+                }
             }
+        } else {
+            0
         };
 
         // Only add book if there are no problems for this entry
