@@ -16,7 +16,7 @@ const Icons = {
 const ThemeContext = createContext({
     theme: Theme.DARK,
     icon: Icons[Theme.DARK],
-    toggle: () => { },
+    toggle: () => {},
 });
 
 export function ThemeProvider({ children }: PropsWithChildren) {

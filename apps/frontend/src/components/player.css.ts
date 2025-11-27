@@ -20,9 +20,6 @@ export const caption = style({
 });
 
 export const image = style({
-    aspectRatio: "1 / 1",
-    width: 40,
-    height: 40,
     gridArea: "logo",
 });
 

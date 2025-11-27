@@ -2,7 +2,7 @@
     "name": "@storyvault/backend",
     "scripts": {
         "build": "cargo build --release",
-        "dev": "cargo watch --ignore .turbo --ignore --ignore tests -x run",
+        "dev": "cargo watch --ignore .turbo --ignore --ignore tests --ignore data/tmp -x run",
         "format": "cargo fmt",
         "lint": "cargo clippy"
     },

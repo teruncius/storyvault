@@ -33,20 +33,19 @@ export function Layout({ children, user }: Props) {
                     <div className={styles.area.right}>
                         <div className={styles.userInfo}>
                             <div className={styles.avatar}>
-                                <Avatar name={{
-                                    firstName: user.first_name,
-                                    lastName: user.last_name,
-                                }} />
+                                <Avatar
+                                    name={{
+                                        firstName: user.first_name,
+                                        lastName: user.last_name,
+                                    }}
+                                />
                             </div>
                             <div className={styles.userName}>
                                 {user.first_name} {user.last_name}
                             </div>
                             <div className={styles.userEmail}>{user.email}</div>
                         </div>
-                        <button
-                            className={styles.toggleTheme}
-                            onClick={toggle}
-                        >
+                        <button className={styles.toggleTheme} onClick={toggle}>
                             {icon}
                         </button>
                         <button

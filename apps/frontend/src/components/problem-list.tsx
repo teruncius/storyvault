@@ -11,13 +11,16 @@ export function ProblemList(props: Props) {
     }
 
     // Group problems by path
-    const problemsByPath = props.problems.reduce((acc, problem) => {
-        if (!acc[problem.path]) {
-            acc[problem.path] = [];
-        }
-        acc[problem.path].push(problem);
-        return acc;
-    }, {} as Record<string, Problem[]>);
+    const problemsByPath = props.problems.reduce(
+        (acc, problem) => {
+            if (!acc[problem.path]) {
+                acc[problem.path] = [];
+            }
+            acc[problem.path].push(problem);
+            return acc;
+        },
+        {} as Record<string, Problem[]>,
+    );
 
     return (
         <div className={styles.container}>
