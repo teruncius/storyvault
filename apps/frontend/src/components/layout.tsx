@@ -29,18 +29,24 @@ export function Layout({ children, user }: Props) {
                         </nav>
                     </div>
                     <div className={styles.area.right}>
+                        <div className={styles.userInfo}>
+                            <div className={styles.avatar}>
+                                <Avatar name={{
+                                    firstName: user.first_name,
+                                    lastName: user.last_name,
+                                }} />
+                            </div>
+                            <div className={styles.userName}>
+                                {user.first_name} {user.last_name}
+                            </div>
+                            <div className={styles.userEmail}>{user.email}</div>
+                        </div>
                         <button
                             className={styles.logout}
                             onClick={() => logout.mutate()}
                         >
                             Logout
                         </button>
-                        <Avatar
-                            name={{
-                                firstName: user.first_name,
-                                lastName: user.last_name,
-                            }}
-                        />
                     </div>
                 </div>
             </header>
