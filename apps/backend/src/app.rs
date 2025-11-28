@@ -3,8 +3,8 @@ use crate::{
     auth::auth_middleware,
     frontend::static_handler,
     handlers::{
-        get_audiobook, get_audiobook_cover, get_favicon, get_problems, get_users, health_check,
-        index, list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
+        get_audiobook, get_audiobook_cover, get_problems, get_users, health_check, index,
+        list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
     },
 };
 use axum::{
@@ -24,7 +24,6 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
     // Public routes (no authentication required)
     let public_router = Router::new()
         .route("/api", get(index))
-        .route("/api/favicon.ico", get(get_favicon))
         .route("/api/health", get(health_check))
         .route("/api/auth/login", post(login));
 
