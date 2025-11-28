@@ -2,7 +2,7 @@ import { useAudiobook } from "@sv/fe/hooks/audiobooks";
 import { useStore } from "@sv/fe/hooks/store";
 import * as styles from "@sv/fe/components/player.css";
 import { useCallback, useEffect, useRef } from "react";
-import { EventType, useUpdatePosition } from "@sv/fe/hooks/progress";
+import { EventType, useUpdatePosition } from "@sv/fe/hooks/position";
 import {
     convertISO8601ToSeconds,
     convertSecondsToISO8601,
@@ -20,25 +20,25 @@ export function Player() {
             console.log("No audio ref");
             return;
         }
-        if (!audiobook?.position_iso) {
+        if (!audiobook?.positionIso) {
             console.log("No position");
             return;
         }
-        console.log("Setting position to", audiobook.position_iso);
+        console.log("Setting position to", audiobook.positionIso);
         audioRef.current.currentTime = convertISO8601ToSeconds(
-            audiobook.position_iso,
+            audiobook.positionIso,
         );
     }, [audiobook]);
 
     const sendPosition = useCallback(
-        (event_type: EventType) => {
+        (eventType: EventType) => {
             if (!audiobook) {
                 return;
             }
             const position = convertSecondsToISO8601(
                 audioRef.current?.currentTime || 0,
             );
-            mutation.mutate({ id: audiobook.id, event_type, position });
+            mutation.mutate({ id: audiobook.id, eventType, position });
         },
         [audiobook, mutation],
     );
@@ -61,7 +61,7 @@ export function Player() {
         <figure className={styles.container}>
             <figcaption className={styles.caption}>
                 <AudiobookCover
-                    cover_url={audiobook.cover_url}
+                    coverUrl={audiobook.coverUrl}
                     title={audiobook.title}
                     width={40}
                     style={{ gridArea: "logo" }}
@@ -74,7 +74,7 @@ export function Player() {
             <audio
                 ref={audioRef}
                 className={styles.player}
-                src={audiobook.stream_url}
+                src={audiobook.streamUrl}
                 controls
                 onPlay={() => sendPosition(EventType.PLAY)}
                 onPause={() => sendPosition(EventType.PAUSE)}

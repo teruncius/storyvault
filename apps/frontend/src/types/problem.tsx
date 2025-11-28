@@ -1,5 +1,5 @@
 export interface Problem {
     path: string;
-    problem_type: string;
+    problemType: string;
     message: string;
 }

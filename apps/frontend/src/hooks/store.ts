@@ -18,8 +18,8 @@ export const useStore = create<PlayerState>((set, get) => ({
     overrideDuration: (audiobooks: Audiobook[]) => {
         const durations: Record<string, string> = {};
         for (const audiobook of audiobooks) {
-            if (audiobook.position_iso) {
-                durations[audiobook.id] = audiobook.position_iso;
+            if (audiobook.positionIso) {
+                durations[audiobook.id] = audiobook.positionIso;
             }
         }
         console.log("overrideDuration", durations);

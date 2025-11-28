@@ -20,13 +20,13 @@ export function Audiobooks(props: Props) {
                     onClick={() => play(audiobook.id)}
                 >
                     <AudiobookCover
-                        cover_url={audiobook.cover_url}
+                        coverUrl={audiobook.coverUrl}
                         title={audiobook.title}
                         width={200}
                     />
                     <ProgressBar
                         position={durations[audiobook.id] || "PT0S"}
-                        duration={audiobook.duration_iso}
+                        duration={audiobook.durationIso}
                     />
                     <div className={styles.text}>
                         <div className={styles.title}>{audiobook.title}</div>

@@ -3,6 +3,7 @@ use axum::{Json, extract::State};
 use serde::Serialize;
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IndexResponse {
     pub health_url: String,
     pub auth_me_url: String,

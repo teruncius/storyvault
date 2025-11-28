@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::User;
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserResponse {
     pub first_name: String,
     pub last_name: String,

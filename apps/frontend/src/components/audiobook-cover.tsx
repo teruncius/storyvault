@@ -1,14 +1,14 @@
 import * as styles from "@sv/fe/components/audiobook-cover.css";
 
 interface Props {
-    cover_url: string;
+    coverUrl: string;
     title: string;
     width: number;
     style?: React.CSSProperties;
 }
 
-export function AudiobookCover({ cover_url, title, width, style }: Props) {
-    const url = new URL(cover_url);
+export function AudiobookCover({ coverUrl, title, width, style }: Props) {
+    const url = new URL(coverUrl);
     url.searchParams.set("width", width.toString());
 
     return (

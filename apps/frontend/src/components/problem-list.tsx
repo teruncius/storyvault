@@ -32,7 +32,7 @@ export function ProblemList(props: Props) {
                         {problems.map((problem, index) => (
                             <div key={index} className={styles.item}>
                                 <div className={styles.problemType}>
-                                    {problem.problem_type}
+                                    {problem.problemType}
                                 </div>
                                 <div className={styles.message}>
                                     {problem.message}
