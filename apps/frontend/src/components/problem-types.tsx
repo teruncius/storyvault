@@ -3,6 +3,8 @@ import * as styles from "@sv/fe/components/problem-types.css";
 
 interface Props {
     problems: Problem[];
+    selectedTypes: string[];
+    onToggleType: (type: string) => void;
 }
 
 export function ProblemTypes(props: Props) {
@@ -24,7 +26,11 @@ export function ProblemTypes(props: Props) {
             <h2 className={styles.title}>Problem Types</h2>
             <ul className={styles.list}>
                 {sortedTypes.map(([type, count]) => (
-                    <li key={type} className={styles.item}>
+                    <li
+                        key={type}
+                        className={`${styles.item} ${props.selectedTypes.includes(type) ? styles.selected : ""}`}
+                        onClick={() => props.onToggleType(type)}
+                    >
                         <span className={styles.typeName}>{type}</span>
                         <span className={styles.count}>{count}</span>
                     </li>

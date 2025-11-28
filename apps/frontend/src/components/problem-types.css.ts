@@ -32,6 +32,16 @@ export const item = style({
     gap: "0.5rem",
     justifyContent: "space-between",
     alignItems: "center",
+    cursor: "pointer",
+    border: `1px solid transparent`,
+    transition: "border-color 0.2s ease",
+    ":hover": {
+        borderColor: vars.color.primary,
+    },
+});
+
+export const selected = style({
+    borderColor: vars.color.primary,
 });
 
 export const typeName = style({
