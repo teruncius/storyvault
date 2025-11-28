@@ -1,6 +1,7 @@
 import { HttpError } from "@sv/fe/lib/query-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { convertSecondsToISO8601 } from "../lib/iso8601";
+import { ENDPOINTS, getApiUrl } from "@sv/fe/lib/config";
 
 export const EventType = {
     PLAY: "PLAY",
@@ -27,7 +28,7 @@ export function useUpdatePosition() {
         }: UpdatePositionRequest) => {
             console.log(id, event_type, position);
             const response = await fetch(
-                `http://localhost:3000/api/audiobook/${id}/position`,
+                getApiUrl(ENDPOINTS.audiobook.position, id),
                 {
                     method: "PUT",
                     headers: {

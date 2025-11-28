@@ -1,16 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Audiobook } from "@sv/fe/types/audiobook";
+import { ENDPOINTS, getApiUrl } from "@sv/fe/lib/config";
 
 export function useAudiobooks() {
     return useQuery({
         queryKey: ["audiobooks"],
         queryFn: async () => {
-            const response = await fetch(
-                "http://localhost:3000/api/audiobook",
-                {
-                    credentials: "include",
-                },
-            );
+            const response = await fetch(getApiUrl(ENDPOINTS.audiobook.list), {
+                credentials: "include",
+            });
             return (await response.json()) as Audiobook[];
         },
     });
@@ -21,7 +19,7 @@ export function useAudiobook(id: string | null) {
         queryKey: ["audiobooks", id],
         queryFn: async () => {
             const response = await fetch(
-                `http://localhost:3000/api/audiobook/${id}`,
+                getApiUrl(ENDPOINTS.audiobook.detail, id!),
                 {
                     credentials: "include",
                 },
