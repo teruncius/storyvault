@@ -103,5 +103,13 @@ fn parse_range(range_header: &str) -> Option<(u64, u64)> {
             s.parse::<u64>().ok()
         }
     })?;
+
+    let max_len = 2u64.pow(17);
+    let end = if end.saturating_sub(start) >= max_len {
+        start + max_len - 1
+    } else {
+        end
+    };
+
     Some((start, end))
 }
