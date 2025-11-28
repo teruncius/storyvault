@@ -1,3 +1,4 @@
+import { ENDPOINTS, getApiUrl } from "@sv/fe/lib/config";
 import { HttpError } from "@sv/fe/lib/query-client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -9,7 +10,7 @@ export function useHealth() {
     return useQuery({
         queryKey: ["health"],
         queryFn: async () => {
-            const response = await fetch("http://localhost:3000/api/health", {
+            const response = await fetch(getApiUrl(ENDPOINTS.health), {
                 credentials: "include",
             });
             if (!response.ok) {
