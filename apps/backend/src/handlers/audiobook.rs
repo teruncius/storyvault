@@ -14,6 +14,7 @@ use crate::iso8601::seconds_to_duration;
 use crate::projections::audiobook_user_progress::AudiobookUserProgressProjection;
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AudiobookResponse {
     id: Uuid,
     title: String,

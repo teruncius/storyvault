@@ -35,13 +35,13 @@ export function Layout({ children, user }: Props) {
                             <div className={styles.avatar}>
                                 <Avatar
                                     name={{
-                                        firstName: user.first_name,
-                                        lastName: user.last_name,
+                                        firstName: user.firstName,
+                                        lastName: user.lastName,
                                     }}
                                 />
                             </div>
                             <div className={styles.userName}>
-                                {user.first_name} {user.last_name}
+                                {user.firstName} {user.lastName}
                             </div>
                             <div className={styles.userEmail}>{user.email}</div>
                         </div>

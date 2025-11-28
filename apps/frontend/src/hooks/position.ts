@@ -14,7 +14,7 @@ export type EventType = (typeof EventType)[keyof typeof EventType];
 
 interface UpdatePositionRequest {
     id: string;
-    event_type: EventType;
+    eventType: EventType;
     position: string;
 }
 
@@ -23,7 +23,7 @@ export function useUpdatePosition() {
     return useMutation({
         mutationFn: async ({
             id,
-            event_type,
+            eventType,
             position,
         }: UpdatePositionRequest) => {
             const response = await fetch(
@@ -34,8 +34,8 @@ export function useUpdatePosition() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        event_type,
-                        position_iso: position,
+                        eventType,
+                        positionIso: position,
                     }),
                     credentials: "include",
                 },

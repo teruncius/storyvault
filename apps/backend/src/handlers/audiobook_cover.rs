@@ -9,6 +9,7 @@ use uuid::Uuid;
 use crate::AppState;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CoverParams {
     width: Option<u32>,
 }
