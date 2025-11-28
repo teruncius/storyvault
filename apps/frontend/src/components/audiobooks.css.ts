@@ -59,6 +59,7 @@ export const subtitle = style({
     whiteSpace: "nowrap",
     color: vars.color.text,
     fontSize: "0.75rem",
+    opacity: 0.7,
 });
 
 export const progress = style({
