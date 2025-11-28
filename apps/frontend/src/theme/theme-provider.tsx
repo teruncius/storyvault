@@ -1,23 +1,18 @@
 import { darkTheme } from "@sv/fe/theme/dark.css";
 import { lightTheme } from "@sv/fe/theme/light.css";
-import { createContext, useCallback, useContext, useState } from "react";
+import { ThemeContext } from "@sv/fe/theme/theme-context";
+import { useCallback, useState } from "react";
 import type { PropsWithChildren } from "react";
 
-const Theme = {
+export const Theme = {
     DARK: darkTheme,
     LIGHT: lightTheme,
 } as const;
 
-const Icons = {
+export const Icons = {
     [Theme.DARK]: "☼",
     [Theme.LIGHT]: "☼",
 } as const;
-
-const ThemeContext = createContext({
-    theme: Theme.DARK,
-    icon: Icons[Theme.DARK],
-    toggle: () => {},
-});
 
 export function ThemeProvider({ children }: PropsWithChildren) {
     const [theme, setTheme] = useState(Theme.DARK);
@@ -32,7 +27,3 @@ export function ThemeProvider({ children }: PropsWithChildren) {
         </ThemeContext>
     );
 }
-
-export const useTheme = () => {
-    return useContext(ThemeContext);
-};
