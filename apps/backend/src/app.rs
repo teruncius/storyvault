@@ -68,11 +68,15 @@ fn build_cors(config: &Config) -> CorsLayer {
     };
 
     cors.allow_methods([
+        Method::CONNECT,
+        Method::DELETE,
         Method::GET,
+        Method::HEAD,
+        Method::OPTIONS,
+        Method::PATCH,
         Method::POST,
         Method::PUT,
-        Method::PATCH,
-        Method::DELETE,
+        Method::TRACE,
     ])
     .allow_headers(vec![AUTHORIZATION, CONTENT_TYPE, COOKIE])
     .allow_credentials(true)
