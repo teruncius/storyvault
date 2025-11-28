@@ -60,6 +60,7 @@ pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
                         Err(e) => {
                             println!("Error rescanning: {}", e);
                             let problem = ScanProblem {
+                                source: None,
                                 path: audiobooks_dir.clone(),
                                 problem_type: ScanProblemType::RescanFailed,
                                 message: format!("Error rescanning: {}", e),
@@ -89,6 +90,7 @@ fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
         }
         Err(e) => {
             let problem = ScanProblem {
+                source: None,
                 path: audiobooks_dir.to_path_buf(),
                 problem_type: ScanProblemType::ScanFailed,
                 message: format!("Error scanning audiobooks: {}", e),
@@ -106,6 +108,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
 
     if !path.exists() {
         problems.push(ScanProblem {
+            source: None,
             path: path.to_path_buf(),
             problem_type: ScanProblemType::MissingStorageDirectory,
             message: format!("Audiobooks directory does not exist: {:?}", path),
@@ -117,6 +120,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
         Ok(entries) => entries,
         Err(e) => {
             problems.push(ScanProblem {
+                source: None,
                 path: path.to_path_buf(),
                 problem_type: ScanProblemType::FailedToReadDirectory,
                 message: format!("Failed to read directory {:?}: {}", path, e),
@@ -130,6 +134,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
             Ok(e) => e,
             Err(e) => {
                 problems.push(ScanProblem {
+                    source: None,
                     path: path.to_path_buf(),
                     problem_type: ScanProblemType::FailedToReadDirectoryEntry,
                     message: format!("Failed to read directory entry: {}", e),
@@ -145,6 +150,10 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
 
         // Local problems vector for this entry
         let mut entry_problems = Vec::new();
+        let source = dir_path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .map(|s| s.to_string());
 
         let index_path = dir_path.join("index.yaml");
         let audio_path = dir_path.join("story.mp3");
@@ -154,6 +163,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
         // Check for missing index.yaml
         if !index_path.exists() {
             entry_problems.push(ScanProblem {
+                source: source.clone(),
                 path: dir_path.clone(),
                 problem_type: ScanProblemType::MissingIndexYaml,
                 message: format!("Missing index.yaml in {:?}", dir_path),
@@ -163,6 +173,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
         // Check for missing audio file
         if !audio_path.exists() {
             entry_problems.push(ScanProblem {
+                source: source.clone(),
                 path: dir_path.clone(),
                 problem_type: ScanProblemType::MissingAudioFile,
                 message: format!("Missing story.mp3 in {:?}", dir_path),
@@ -173,6 +184,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
         let has_cover = cover_webp.exists() || cover_jpg.exists();
         if !has_cover {
             entry_problems.push(ScanProblem {
+                source: source.clone(),
                 path: dir_path.clone(),
                 problem_type: ScanProblemType::MissingCover,
                 message: format!("Missing cover.webp or cover.jpg in {:?}", dir_path),
@@ -184,6 +196,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
             Ok(c) => c,
             Err(e) => {
                 entry_problems.push(ScanProblem {
+                    source: source.clone(),
                     path: index_path.clone(),
                     problem_type: ScanProblemType::FailedToReadFile,
                     message: format!("Failed to read index.yaml: {}", e),
@@ -197,6 +210,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
             Ok(b) => Some(b),
             Err(e) => {
                 entry_problems.push(ScanProblem {
+                    source: source.clone(),
                     path: index_path.clone(),
                     problem_type: ScanProblemType::InvalidYamlFormat,
                     message: format!("Failed to parse YAML: {}", e),
@@ -211,6 +225,7 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
                 Some(d) => d,
                 None => {
                     entry_problems.push(ScanProblem {
+                        source: source.clone(),
                         path: audio_path.clone(),
                         problem_type: ScanProblemType::UnableToExtractDuration,
                         message: format!("Unable to extract duration from {:?}", audio_path),
