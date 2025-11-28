@@ -31,14 +31,17 @@ export function useLogin() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ email, password }: LoginInput) => {
-            const response = await fetch("http://localhost:3000/api/auth/login", {
-                method: "POST",
-                body: JSON.stringify({ email, password }),
-                headers: {
-                    "Content-Type": "application/json",
+            const response = await fetch(
+                "http://localhost:3000/api/auth/login",
+                {
+                    method: "POST",
+                    body: JSON.stringify({ email, password }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
                 },
-                credentials: "include",
-            });
+            );
             if (!response.ok) {
                 throw HttpError.fromResponse(response, true);
             }
@@ -53,10 +56,13 @@ export function useLogout() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async () => {
-            const response = await fetch("http://localhost:3000/api/auth/logout", {
-                method: "POST",
-                credentials: "include",
-            });
+            const response = await fetch(
+                "http://localhost:3000/api/auth/logout",
+                {
+                    method: "POST",
+                    credentials: "include",
+                },
+            );
             if (!response.ok) {
                 throw HttpError.fromResponse(response);
             }

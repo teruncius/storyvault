@@ -5,9 +5,12 @@ export function useAudiobooks() {
     return useQuery({
         queryKey: ["audiobooks"],
         queryFn: async () => {
-            const response = await fetch("http://localhost:3000/api/audiobook", {
-                credentials: "include",
-            });
+            const response = await fetch(
+                "http://localhost:3000/api/audiobook",
+                {
+                    credentials: "include",
+                },
+            );
             return (await response.json()) as Audiobook[];
         },
     });
