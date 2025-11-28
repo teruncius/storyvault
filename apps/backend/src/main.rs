@@ -6,7 +6,7 @@ mod state;
 pub use state::{AppState, Audiobook, ScanProblem, ScanProblemType, Session, User, build_state};
 
 mod scan;
-pub use scan::{initial_scan, setup_watcher};
+pub use scan::build_watcher;
 
 mod config;
 pub use config::{Config, SESSION_COOKIE_NAME, SESSION_DURATION_HOURS};
@@ -55,18 +55,8 @@ async fn main() {
     });
 
     let shared_state = build_state(&config, db_pool, event_queue);
-
-    // Initial scan
-    let audiobooks_dir = config.audiobooks_dir();
-    initial_scan(&audiobooks_dir, &shared_state);
-
-    // Setup file watcher
-    let _watcher = setup_watcher(config.vault.clone(), shared_state.clone());
-
-    // Build our application
+    let _watcher = build_watcher(config.vault.clone(), shared_state.clone());
     let app = build_app(shared_state, &config);
-
-    // Run it
     build_server(app, &config).await;
 }
 
