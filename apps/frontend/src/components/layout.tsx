@@ -6,7 +6,7 @@ import { useLogout } from "@sv/fe/hooks/user";
 import { Player } from "@sv/fe/components/player";
 import type { User } from "@sv/fe/types/user";
 import { Link } from "react-router-dom";
-import { useTheme } from "@sv/fe/components/theme";
+import { useTheme } from "@sv/fe/theme/theme-hook";
 
 interface Props extends PropsWithChildren {
     user: User;

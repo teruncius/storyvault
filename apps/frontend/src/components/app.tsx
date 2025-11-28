@@ -13,7 +13,7 @@ import { HomePage } from "@sv/fe/components/home-page";
 import { ProblemPage } from "@sv/fe/components/problem-page";
 import { Layout } from "@sv/fe/components/layout";
 import { LoadingPage } from "@sv/fe/components/loading-page";
-import { ThemeProvider } from "@sv/fe/components/theme";
+import { ThemeProvider } from "@sv/fe/theme/theme-provider";
 import { NotFoundPage } from "@sv/fe/components/not-found-page";
 
 export function App() {
