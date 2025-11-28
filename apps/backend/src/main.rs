@@ -72,7 +72,7 @@ async fn main() {
 
 async fn build_server(app: Router, config: &Config) {
     let addr = config.socket_addr();
-    println!("startet server on http://{}/", addr);
+    println!("Started server on http://{}/", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
