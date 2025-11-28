@@ -10,6 +10,7 @@ interface Props {
 
 export function Audiobooks(props: Props) {
     const { play } = useStore();
+    const { durations } = useStore();
     return (
         <div className={styles.container}>
             {props.audiobooks.map((audiobook) => (
@@ -24,14 +25,16 @@ export function Audiobooks(props: Props) {
                         width={200}
                     />
                     <ProgressBar
-                        position={audiobook.position_iso}
+                        position={durations[audiobook.id] || "PT0S"}
                         duration={audiobook.duration_iso}
                     />
-                    <div className={styles.title}>{audiobook.title}</div>
-                    <div className={styles.subtitle}>
-                        <>
-                            {audiobook.authors.join(", ")} - {audiobook.year}
-                        </>
+                    <div className={styles.text}>
+                        <div className={styles.title}>{audiobook.title}</div>
+                        <div className={styles.subtitle}>
+                            <>
+                                {audiobook.authors.join(", ")} - {audiobook.year}
+                            </>
+                        </div>
                     </div>
                 </button>
             ))}
