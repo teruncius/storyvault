@@ -43,8 +43,6 @@ export function useLogin() {
             if (!response.ok) {
                 throw HttpError.fromResponse(response, true);
             }
-        },
-        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY] });
         },
     });
@@ -61,8 +59,6 @@ export function useLogout() {
             if (!response.ok) {
                 throw HttpError.fromResponse(response);
             }
-        },
-        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY] });
         },
     });

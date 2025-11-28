@@ -39,6 +39,8 @@ export const tile = style({
     },
 });
 
+export const text = style({});
+
 export const title = style({
     fontWeight: "bold",
     textTransform: "uppercase",

@@ -43,6 +43,7 @@ export const subtitle = style({
     fontSize: "0.75rem",
     gridArea: "subtitle",
     alignSelf: "start",
+    opacity: 0.7,
 });
 
 export const player = style({});

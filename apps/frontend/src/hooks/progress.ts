@@ -1,7 +1,8 @@
 import { HttpError } from "@sv/fe/lib/query-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { convertSecondsToISO8601 } from "../lib/iso8601";
 import { ENDPOINTS, getApiUrl } from "@sv/fe/lib/config";
+import { useStore } from "@sv/fe/hooks/store";
 
 export const EventType = {
     PLAY: "PLAY",
@@ -15,18 +16,17 @@ export type EventType = (typeof EventType)[keyof typeof EventType];
 interface UpdatePositionRequest {
     id: string;
     event_type: EventType;
-    position: number;
+    position: string;
 }
 
 export function useUpdatePosition() {
-    const queryClient = useQueryClient();
+    const { setDuration } = useStore();
     return useMutation({
         mutationFn: async ({
             id,
             event_type,
             position,
         }: UpdatePositionRequest) => {
-            console.log(id, event_type, position);
             const response = await fetch(
                 getApiUrl(ENDPOINTS.audiobook.position, id),
                 {
@@ -36,7 +36,7 @@ export function useUpdatePosition() {
                     },
                     body: JSON.stringify({
                         event_type,
-                        position_iso: convertSecondsToISO8601(position),
+                        position_iso: position,
                     }),
                     credentials: "include",
                 },
@@ -44,12 +44,7 @@ export function useUpdatePosition() {
             if (!response.ok) {
                 throw HttpError.fromResponse(response);
             }
-        },
-        onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: ["audiobooks", variables.id],
-            });
-            queryClient.invalidateQueries({ queryKey: ["audiobooks"] });
+            setDuration(id, position);
         },
     });
 }
