@@ -7,22 +7,100 @@ use tokio::sync::mpsc;
 use crate::state::{ScanProblem, ScanProblemType};
 use crate::{AppState, Audiobook};
 
-fn get_audio_duration(path: &Path) -> Option<u64> {
-    match mp3_duration::from_path(path) {
-        Ok(duration) => Some(duration.as_secs()),
-        Err(e) => {
-            eprintln!("Failed to read duration from {:?}: {}", path, e);
-            None
-        }
-    }
-}
-
+#[derive(Debug, Clone)]
 pub struct ScanResult {
     pub books: std::collections::HashMap<uuid::Uuid, Audiobook>,
     pub problems: Vec<ScanProblem>,
 }
 
-pub fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
+pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher {
+    // Perform initial scan
+    let audiobooks_dir = data_path.join("audiobooks");
+    initial_scan(&audiobooks_dir, &state);
+
+    let (tx, mut rx) = mpsc::channel(64);
+    let mut watcher = RecommendedWatcher::new(
+        move |res| {
+            let _ = tx.blocking_send(res);
+        },
+        Config::default(),
+    )
+    .unwrap();
+
+    watcher.watch(&data_path, RecursiveMode::Recursive).unwrap();
+    println!("Monitoring directory: {:?}", data_path);
+
+    // Spawn background task to handle events
+    let audiobooks_dir = data_path.clone().join("audiobooks");
+    let watcher_state = state.clone();
+
+    tokio::spawn(async move {
+        while let Some(res) = rx.recv().await {
+            match res {
+                Ok(event) => {
+                    // Simple logic: if any yaml file changes, re-scan
+                    let should_rescan = event.paths.iter().any(|p| {
+                        p.extension()
+                            .is_some_and(|ext| ext == "yaml" || ext == "yml")
+                    });
+
+                    if !should_rescan {
+                        continue;
+                    }
+
+                    println!("Metadata change detected. Rescanning...");
+                    match scan_audiobooks(&audiobooks_dir) {
+                        Ok(result) => {
+                            print_results(result.clone());
+                            let mut state = watcher_state.audiobooks.write().unwrap();
+                            *state = result.books;
+                            let mut problems_guard = watcher_state.scan_problems.write().unwrap();
+                            *problems_guard = result.problems;
+                        }
+                        Err(e) => {
+                            println!("Error rescanning: {}", e);
+                            let problem = ScanProblem {
+                                path: audiobooks_dir.clone(),
+                                problem_type: ScanProblemType::RescanFailed,
+                                message: format!("Error rescanning: {}", e),
+                            };
+                            let mut problems_guard = watcher_state.scan_problems.write().unwrap();
+                            problems_guard.push(problem);
+                        }
+                    }
+                }
+                Err(e) => println!("Watch error: {:?}", e),
+            }
+        }
+    });
+
+    watcher
+}
+
+fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
+    println!("Scanning audiobooks...");
+    match scan_audiobooks(audiobooks_dir) {
+        Ok(result) => {
+            print_results(result.clone());
+            let mut state_guard = state.audiobooks.write().unwrap();
+            *state_guard = result.books;
+            let mut problems_guard = state.scan_problems.write().unwrap();
+            *problems_guard = result.problems;
+        }
+        Err(e) => {
+            let problem = ScanProblem {
+                path: audiobooks_dir.to_path_buf(),
+                problem_type: ScanProblemType::ScanFailed,
+                message: format!("Error scanning audiobooks: {}", e),
+            };
+            println!("Error scanning audiobooks: {}", e);
+            let mut problems_guard = state.scan_problems.write().unwrap();
+            problems_guard.push(problem);
+        }
+    }
+}
+
+fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
     let mut books = std::collections::HashMap::new();
     let mut problems = Vec::new();
 
@@ -114,6 +192,7 @@ pub fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
             }
         };
 
+        // Try to parse index.yaml
         let book = match serde_yaml::from_str::<Audiobook>(&content) {
             Ok(b) => Some(b),
             Err(e) => {
@@ -159,117 +238,30 @@ pub fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
     Ok(ScanResult { books, problems })
 }
 
-pub fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
-    println!("Scanning audiobooks...");
-    match scan_audiobooks(audiobooks_dir) {
-        Ok(result) => {
-            println!("Found {} audiobooks:", result.books.len());
-            for book in result.books.values() {
-                println!(
-                    " - {} by {} ({:?})",
-                    book.title,
-                    book.authors.join(", "),
-                    book.path
-                );
-            }
-            if !result.problems.is_empty() {
-                println!("Found {} problems during scan:", result.problems.len());
-                for problem in &result.problems {
-                    println!(" - {:?}: {}", problem.problem_type, problem.message);
-                }
-            }
-            let mut state_guard = state.audiobooks.write().unwrap();
-            *state_guard = result.books;
-            let mut problems_guard = state.scan_problems.write().unwrap();
-            *problems_guard = result.problems;
-        }
+fn get_audio_duration(path: &Path) -> Option<u64> {
+    match mp3_duration::from_path(path) {
+        Ok(duration) => Some(duration.as_secs()),
         Err(e) => {
-            let problem = ScanProblem {
-                path: audiobooks_dir.to_path_buf(),
-                problem_type: ScanProblemType::ScanFailed,
-                message: format!("Error scanning audiobooks: {}", e),
-            };
-            println!("Error scanning audiobooks: {}", e);
-            let mut problems_guard = state.scan_problems.write().unwrap();
-            problems_guard.push(problem);
+            eprintln!("Failed to read duration from {:?}: {}", path, e);
+            None
         }
     }
 }
 
-pub fn setup_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher {
-    let (tx, mut rx) = mpsc::channel(100);
-
-    let mut watcher = RecommendedWatcher::new(
-        move |res| {
-            let _ = tx.blocking_send(res);
-        },
-        Config::default(),
-    )
-    .unwrap();
-
-    watcher.watch(&data_path, RecursiveMode::Recursive).unwrap();
-
-    println!("Monitoring directory: {:?}", data_path);
-
-    // Spawn background task to handle events
-    let data_path_clone = data_path.clone();
-    let watcher_state = state.clone();
-
-    tokio::spawn(async move {
-        while let Some(res) = rx.recv().await {
-            match res {
-                Ok(event) => {
-                    // Simple logic: if any yaml file changes, re-scan
-                    let should_rescan = event.paths.iter().any(|p| {
-                        p.extension()
-                            .is_some_and(|ext| ext == "yaml" || ext == "yml")
-                    });
-
-                    if should_rescan {
-                        println!("Metadata change detected. Rescanning...");
-                        let audiobooks_dir = data_path_clone.join("audiobooks");
-                        match scan_audiobooks(&audiobooks_dir) {
-                            Ok(result) => {
-                                println!(
-                                    "Rescan complete. Found {} audiobooks.",
-                                    result.books.len()
-                                );
-                                if !result.problems.is_empty() {
-                                    println!(
-                                        "Found {} problems during rescan:",
-                                        result.problems.len()
-                                    );
-                                    for problem in &result.problems {
-                                        println!(
-                                            " - {:?}: {}",
-                                            problem.problem_type, problem.message
-                                        );
-                                    }
-                                }
-                                let mut state = watcher_state.audiobooks.write().unwrap();
-                                *state = result.books;
-                                let mut problems_guard =
-                                    watcher_state.scan_problems.write().unwrap();
-                                *problems_guard = result.problems;
-                            }
-                            Err(e) => {
-                                println!("Error rescanning: {}", e);
-                                let problem = ScanProblem {
-                                    path: audiobooks_dir,
-                                    problem_type: ScanProblemType::RescanFailed,
-                                    message: format!("Error rescanning: {}", e),
-                                };
-                                let mut problems_guard =
-                                    watcher_state.scan_problems.write().unwrap();
-                                problems_guard.push(problem);
-                            }
-                        }
-                    }
-                }
-                Err(e) => println!("Watch error: {:?}", e),
-            }
+fn print_results(result: ScanResult) {
+    println!("Found {} audiobooks:", result.books.len());
+    for book in result.books.values() {
+        println!(
+            " - {} by {} ({:?})",
+            book.title,
+            book.authors.join(", "),
+            book.path
+        );
+    }
+    if !result.problems.is_empty() {
+        println!("Found {} problems during scan:", result.problems.len());
+        for problem in &result.problems {
+            println!(" - {:?}: {}", problem.problem_type, problem.message);
         }
-    });
-
-    watcher
+    }
 }
