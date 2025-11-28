@@ -16,7 +16,7 @@ export const caption = style({
         "logo title"
         "logo subtitle"
     `,
-    gap: "0.5rem",
+    gap: "0 0.5rem",
 });
 
 export const image = style({
@@ -31,6 +31,7 @@ export const title = style({
     textTransform: "uppercase",
     fontSize: "0.75rem",
     gridArea: "title",
+    alignSelf: "end",
 });
 
 export const subtitle = style({
@@ -41,6 +42,7 @@ export const subtitle = style({
     textTransform: "capitalize",
     fontSize: "0.75rem",
     gridArea: "subtitle",
+    alignSelf: "start",
 });
 
 export const player = style({});
