@@ -3,14 +3,16 @@ import { useStore } from "@sv/fe/hooks/store";
 import * as styles from "@sv/fe/components/player.css";
 import { useCallback, useEffect, useRef } from "react";
 import { EventType, useUpdatePosition } from "@sv/fe/hooks/progress";
-import { convertISO8601ToSeconds, convertSecondsToISO8601 } from "@sv/fe/lib/iso8601";
+import {
+    convertISO8601ToSeconds,
+    convertSecondsToISO8601,
+} from "@sv/fe/lib/iso8601";
 import { AudiobookCover } from "@sv/fe/components/audiobook-cover";
 
 export function Player() {
     const { currentAudiobook } = useStore();
     const { data: audiobook } = useAudiobook(currentAudiobook);
     const audioRef = useRef<HTMLAudioElement>(null);
-
     const mutation = useUpdatePosition();
 
     const seekToPosition = useCallback(() => {
@@ -33,7 +35,9 @@ export function Player() {
             if (!audiobook) {
                 return;
             }
-            const position = convertSecondsToISO8601(audioRef.current?.currentTime || 0);
+            const position = convertSecondsToISO8601(
+                audioRef.current?.currentTime || 0,
+            );
             mutation.mutate({ id: audiobook.id, event_type, position });
         },
         [audiobook, mutation],

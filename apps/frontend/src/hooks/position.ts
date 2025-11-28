@@ -1,6 +1,5 @@
 import { HttpError } from "@sv/fe/lib/query-client";
 import { useMutation } from "@tanstack/react-query";
-import { convertSecondsToISO8601 } from "../lib/iso8601";
 import { ENDPOINTS, getApiUrl } from "@sv/fe/lib/config";
 import { useStore } from "@sv/fe/hooks/store";
 
