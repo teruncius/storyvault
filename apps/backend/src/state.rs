@@ -26,6 +26,7 @@ pub enum ScanProblemType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScanProblem {
+    pub source: Option<String>,
     pub path: PathBuf,
     pub problem_type: ScanProblemType,
     pub message: String,

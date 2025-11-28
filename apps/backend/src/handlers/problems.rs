@@ -8,6 +8,7 @@ use crate::state::{ScanProblem, ScanProblemType};
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProblemResponse {
+    pub source: Option<String>,
     pub path: String,
     pub problem_type: String,
     pub message: String,
@@ -16,6 +17,7 @@ pub struct ProblemResponse {
 impl From<&ScanProblem> for ProblemResponse {
     fn from(problem: &ScanProblem) -> Self {
         ProblemResponse {
+            source: problem.source.clone(),
             path: problem.path.to_string_lossy().to_string(),
             problem_type: match &problem.problem_type {
                 ScanProblemType::MissingIndexYaml => "MissingIndexYaml",

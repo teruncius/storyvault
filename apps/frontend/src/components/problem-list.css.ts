@@ -15,14 +15,13 @@ export const title = style({
 export const list = style({
     display: "flex",
     flexDirection: "column",
-    gap: "0.75rem",
+    gap: "1rem",
 });
 
 export const pathGroup = style({
     display: "flex",
     flexDirection: "column",
     gap: "0.5rem",
-    marginBottom: "1rem",
 });
 
 export const item = style({
