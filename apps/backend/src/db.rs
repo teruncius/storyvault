@@ -53,5 +53,20 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
     .execute(&pool)
     .await?;
 
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            first_name TEXT NOT NULL,
+            last_name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            avatar_url TEXT NOT NULL
+        );
+        "#,
+    )
+    .execute(&pool)
+    .await?;
+
     Ok(pool)
 }

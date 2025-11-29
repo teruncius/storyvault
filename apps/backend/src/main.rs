@@ -3,7 +3,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 mod state;
-pub use state::{AppState, Audiobook, ScanProblem, ScanProblemType, Session, User, build_state};
+pub use state::{AppState, Audiobook, ScanProblem, ScanProblemType, Session, build_state};
 
 mod scan;
 pub use scan::build_watcher;
@@ -19,6 +19,7 @@ mod frontend;
 mod handlers;
 mod iso8601;
 mod projections;
+mod user;
 pub use app::build_app;
 
 #[derive(Parser, Debug)]
