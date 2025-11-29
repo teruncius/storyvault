@@ -31,20 +31,26 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    match run().await {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            Err(e)
+        }
+    }
+}
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     // Load configuration
-    let config = Config::from_file(&args.config).unwrap_or_else(|e| {
-        eprintln!("Failed to load config from {:?}: {}", args.config, e);
-        std::process::exit(1);
-    });
+    let config = Config::from_file(&args.config)?;
 
     // Initialize database
-    let db_pool = db::init_db(&config.database.url).await.unwrap_or_else(|e| {
-        eprintln!("Failed to initialize database: {}", e);
-        std::process::exit(1);
-    });
+    let db_pool = db::init_db(&config.database.url).await?;
+    // Execute database migrations
+    db::migrate(&db_pool).await?;
 
     // Create event queue and bus
     let (event_queue, receiver) = events::EventQueue::new();
@@ -59,6 +65,8 @@ async fn main() {
     let _watcher = build_watcher(config.vault.clone(), shared_state.clone());
     let app = build_app(shared_state, &config);
     build_server(app, &config).await;
+
+    Ok(())
 }
 
 async fn build_server(app: Router, config: &Config) {
