@@ -61,7 +61,7 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
             last_name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
-            avatar_url TEXT NOT NULL
+            avatar_url TEXT
         );
         "#,
     )
