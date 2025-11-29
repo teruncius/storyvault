@@ -1,5 +1,5 @@
 use crate::events::{Event, EventPayload};
-use crate::projections::{Projection, Projector};
+use crate::projections::{Projection, ProjectionError, Projector};
 use sqlx::SqlitePool;
 use std::future::Future;
 use uuid::Uuid;
@@ -32,9 +32,11 @@ impl Projector for AudiobookUserProgressProjector {
     fn project<'a>(
         &'a self,
         event: &'a Event,
-    ) -> std::pin::Pin<Box<dyn Future<Output = Result<(), sqlx::Error>> + Send + 'a>> {
+    ) -> std::pin::Pin<Box<dyn Future<Output = Result<(), ProjectionError>> + Send + 'a>> {
         Box::pin(async move {
-            let EventPayload::AudiobookProgress(payload) = &event.payload;
+            let EventPayload::AudiobookProgress(payload) = &event.payload else {
+                return Err(ProjectionError::new("Invalid event".into()));
+            };
 
             let data = ProjectionData {
                 audiobook_id: payload.audiobook_id,
@@ -43,6 +45,7 @@ impl Projector for AudiobookUserProgressProjector {
             };
 
             self.projection.save(&data).await?;
+
             Ok(())
         })
     }
@@ -105,7 +108,7 @@ impl AudiobookUserProgressProjection {
 }
 
 impl Projection<ProjectionData> for AudiobookUserProgressProjection {
-    async fn save(&self, data: &ProjectionData) -> Result<(), sqlx::Error> {
+    async fn save(&self, data: &ProjectionData) -> Result<(), ProjectionError> {
         sqlx::query(
             r#"
             INSERT INTO audiobook_user_progress (audiobook_id, user_id, last_position_seconds)

@@ -5,6 +5,7 @@ pub mod store;
 pub use listener::EventBus;
 pub use queue::EventQueue;
 
+use sqlx::Row;
 use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
@@ -54,25 +55,59 @@ pub struct AudiobookProgressPayload {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct TestPayload {
+    pub message: String,
+}
+
+#[derive(Debug)]
 pub enum EventPayload {
+    Test(TestPayload),
     AudiobookProgress(AudiobookProgressPayload),
 }
 
 impl EventPayload {
     pub fn topic(&self) -> &'static str {
         match self {
+            EventPayload::Test(_) => "test",
             EventPayload::AudiobookProgress(_) => "audiobook.progress",
         }
     }
 
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
-        serde_json::to_string(&self)
+        match self {
+            EventPayload::Test(payload) => serde_json::to_string(payload),
+            EventPayload::AudiobookProgress(payload) => serde_json::to_string(payload),
+        }
+    }
+
+    pub fn from_parts(
+        topic: &str,
+        payload_json: &str,
+    ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+        match topic {
+            "audiobook.progress" => {
+                let payload: AudiobookProgressPayload = serde_json::from_str(payload_json)?;
+                Ok(EventPayload::AudiobookProgress(payload))
+            }
+            _ => Err(format!("Unknown event topic: {}", topic).into()),
+        }
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Event {
     pub created_at: DateTime<Utc>,
     pub event_id: Uuid,
     pub payload: EventPayload,
+}
+
+impl<'r> sqlx::FromRow<'r, sqlx::sqlite::SqliteRow> for Event {
+    fn from_row(row: &sqlx::sqlite::SqliteRow) -> Result<Self, sqlx::Error> {
+        Ok(Self {
+            created_at: row.get("created_at"),
+            event_id: row.get("event_id"),
+            payload: EventPayload::from_parts(row.get("topic"), row.get("payload"))
+                .map_err(sqlx::Error::Decode)?,
+        })
+    }
 }
