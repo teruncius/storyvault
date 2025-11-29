@@ -23,7 +23,7 @@ impl EventStore {
             VALUES (?, ?, ?, ?)
             "#,
         )
-        .bind(event.event_id.to_string())
+        .bind(event.event_id)
         .bind(topic)
         .bind(payload_json)
         .bind(event.created_at)

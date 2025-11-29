@@ -30,7 +30,7 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS events (
-            event_id TEXT PRIMARY KEY,
+            event_id BLOB PRIMARY KEY,
             topic TEXT NOT NULL,
             payload TEXT NOT NULL,
             created_at DATETIME NOT NULL
@@ -43,8 +43,8 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS audiobook_user_progress (
-            audiobook_id TEXT NOT NULL,
-            user_id TEXT NOT NULL,
+            audiobook_id BLOB NOT NULL,
+            user_id BLOB NOT NULL,
             last_position_seconds INTEGER NOT NULL,
             PRIMARY KEY (audiobook_id, user_id)
         );
@@ -56,7 +56,7 @@ pub async fn init_db(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
+            id BLOB PRIMARY KEY,
             first_name TEXT NOT NULL,
             last_name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
