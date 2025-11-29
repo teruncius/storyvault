@@ -38,6 +38,7 @@ export function useUpdatePosition() {
                         positionIso: position,
                     }),
                     credentials: "include",
+                    keepalive: true,
                 },
             );
             if (!response.ok) {
