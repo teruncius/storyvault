@@ -10,12 +10,11 @@ impl EventStore {
         Self { pool }
     }
 
-    pub async fn record_event(&self, event: &Event) -> Result<(), sqlx::Error> {
+    pub async fn record_event(&self, event: &Event) -> Result<(), Box<dyn std::error::Error>> {
         let topic = event.payload.topic();
-        let payload_json = event
-            .payload
-            .to_json()
-            .map_err(|e| sqlx::Error::Encode(Box::new(e)))?;
+        let payload_json = event.payload.to_json()?;
+
+        println!("Recording event: {:#?}", event);
 
         sqlx::query(
             r#"
@@ -29,6 +28,13 @@ impl EventStore {
         .bind(event.created_at)
         .execute(&self.pool)
         .await?;
+
+        let event: Event = sqlx::query_as(r#"SELECT * FROM events WHERE event_id = ?"#)
+            .bind(event.event_id)
+            .fetch_one(&self.pool)
+            .await?;
+
+        println!("Loaded stored event: {:#?}", event);
 
         Ok(())
     }
