@@ -1,6 +1,8 @@
 use axum::Router;
 use clap::Parser;
 use std::path::PathBuf;
+use tracing::{error, info};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod state;
 pub use state::{AppState, Audiobook, ScanProblem, ScanProblemType, Session, build_state};
@@ -35,13 +37,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match run().await {
         Ok(_) => Ok(()),
         Err(e) => {
-            eprintln!("Error: {}", e);
+            error!("Error: {}", e);
             Err(e)
         }
     }
 }
 
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    setup_logging();
+
     let args = Args::parse();
 
     // Load configuration
@@ -69,9 +73,19 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn setup_logging() {
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::new(
+            std::env::var("RUST_LOG")
+                .unwrap_or_else(|_| "storyvault=debug,tower_http=debug".into()),
+        ))
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+}
+
 async fn build_server(app: Router, config: &Config) {
     let addr = config.socket_addr();
-    println!("Started server on http://{}/", addr);
+    info!("Started server on http://{}/", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

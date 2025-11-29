@@ -3,6 +3,7 @@ use super::store::EventStore;
 use crate::projections::Projector;
 use sqlx::SqlitePool;
 use tokio::sync::mpsc;
+use tracing::{error, info};
 
 /// Event bus that processes events from the queue
 pub struct EventBus {
@@ -27,20 +28,20 @@ impl EventBus {
 
     /// Start listening for events and processing them
     pub async fn start(mut self) {
-        println!("Event bus started");
+        info!("Event bus started");
 
         while let Some(event) = self.receiver.recv().await {
             if let Err(e) = self.process_event(&event).await {
-                eprintln!("Failed to process event: {}", e);
+                error!("Failed to process event: {}", e);
             }
         }
 
-        println!("Event bus stopped");
+        info!("Event bus stopped");
     }
 
     /// Process a single event by storing it in the database and updating projections
     async fn process_event(&self, event: &Event) -> Result<(), String> {
-        println!(
+        info!(
             "Processing event: {} topic: {}",
             event.event_id,
             event.payload.topic()
@@ -57,11 +58,11 @@ impl EventBus {
             if projector.handles(event)
                 && let Err(e) = projector.project(event).await
             {
-                eprintln!("Failed to project event {}: {}", event.event_id, e);
+                error!("Failed to project event {}: {}", event.event_id, e);
             }
         }
 
-        println!("Event {} processed successfully", event.event_id);
+        info!("Event {} processed successfully", event.event_id);
         Ok(())
     }
 }

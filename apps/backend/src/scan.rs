@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::{Path, PathBuf};
+use tracing::{debug, error, info, warn};
 
 use notify::{Config, RecommendedWatcher, RecursiveMode, Watcher};
 use tokio::sync::mpsc;
@@ -28,7 +29,7 @@ pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
     .unwrap();
 
     watcher.watch(&data_path, RecursiveMode::Recursive).unwrap();
-    println!("Monitoring directory: {:?}", data_path);
+    info!("Monitoring directory: {:?}", data_path);
 
     // Spawn background task to handle events
     let audiobooks_dir = data_path.clone().join("audiobooks");
@@ -48,7 +49,7 @@ pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
                         continue;
                     }
 
-                    println!("Metadata change detected. Rescanning...");
+                    info!("Metadata change detected. Rescanning...");
                     match scan_audiobooks(&audiobooks_dir) {
                         Ok(result) => {
                             print_results(result.clone());
@@ -58,7 +59,7 @@ pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
                             *problems_guard = result.problems;
                         }
                         Err(e) => {
-                            println!("Error rescanning: {}", e);
+                            error!("Error rescanning: {}", e);
                             let problem = ScanProblem {
                                 source: None,
                                 path: audiobooks_dir.clone(),
@@ -70,7 +71,7 @@ pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
                         }
                     }
                 }
-                Err(e) => println!("Watch error: {:?}", e),
+                Err(e) => error!("Watch error: {:?}", e),
             }
         }
     });
@@ -79,7 +80,7 @@ pub fn build_watcher(data_path: PathBuf, state: AppState) -> RecommendedWatcher 
 }
 
 fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
-    println!("Scanning audiobooks...");
+    info!("Scanning audiobooks...");
     match scan_audiobooks(audiobooks_dir) {
         Ok(result) => {
             print_results(result.clone());
@@ -95,7 +96,7 @@ fn initial_scan(audiobooks_dir: &Path, state: &AppState) {
                 problem_type: ScanProblemType::ScanFailed,
                 message: format!("Error scanning audiobooks: {}", e),
             };
-            println!("Error scanning audiobooks: {}", e);
+            error!("Error scanning audiobooks: {}", e);
             let mut problems_guard = state.scan_problems.write().unwrap();
             problems_guard.push(problem);
         }
@@ -257,26 +258,26 @@ fn get_audio_duration(path: &Path) -> Option<u64> {
     match mp3_duration::from_path(path) {
         Ok(duration) => Some(duration.as_secs()),
         Err(e) => {
-            eprintln!("Failed to read duration from {:?}: {}", path, e);
+            error!("Failed to read duration from {:?}: {}", path, e);
             None
         }
     }
 }
 
 fn print_results(result: ScanResult) {
-    println!("Found {} audiobooks:", result.books.len());
+    info!("Found {} audiobooks:", result.books.len());
     for book in result.books.values() {
-        println!(
-            " - {} by {} ({:?})",
+        debug!(
+            "{} by {} ({:?})",
             book.title,
             book.authors.join(", "),
             book.path
         );
     }
     if !result.problems.is_empty() {
-        println!("Found {} problems during scan:", result.problems.len());
+        warn!("Found {} problems during scan:", result.problems.len());
         for problem in &result.problems {
-            println!(" - {:?}: {}", problem.problem_type, problem.message);
+            warn!(" - {:?}: {}", problem.problem_type, problem.message);
         }
     }
 }

@@ -5,6 +5,7 @@ use axum::{
     response::IntoResponse,
 };
 use serde::{Deserialize, Serialize};
+use tracing::error;
 use uuid::Uuid;
 
 use crate::{
@@ -55,7 +56,7 @@ pub async fn set_audiobook_position(
     match state.event_queue.enqueue(event) {
         Ok(_) => StatusCode::OK.into_response(),
         Err(e) => {
-            eprintln!("Failed to enqueue event: {}", e);
+            error!("Failed to enqueue event: {}", e);
             (StatusCode::INTERNAL_SERVER_ERROR, "Failed to enqueue event").into_response()
         }
     }
