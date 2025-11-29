@@ -7,6 +7,9 @@ run:
 build:
     pnpm run build
 
+build-windows:
+    pnpm run build:windows
+
 format:
     pnpm run format
 

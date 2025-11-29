@@ -3,16 +3,16 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "target/**"],
+      "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
     },
-    "backend#build": {
-      "dependsOn": ["^frontend#build"],
-      "outputs": ["target/**"],
+    "build:windows": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
     },
     "dev": {
-      "dependsOn": ["^dev", "^build"],
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     },

@@ -3,10 +3,11 @@
     "scripts": {
         "dev": "cargo watch --ignore .turbo --ignore --ignore tests --ignore data/tmp -x run",
         "build": "cargo build --release",
+        "build:windows": "cargo build --release --target x86_64-pc-windows-gnu",
         "format": "cargo fmt",
         "lint": "cargo clippy"
     },
     "dependencies": {
-        "react-router": "^7.9.6"
+        "@sv/fe": "workspace:*"
     }
 }
