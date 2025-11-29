@@ -7,6 +7,7 @@ pub mod auth_me;
 pub mod health;
 pub mod index;
 pub mod problems;
+pub mod r#static;
 pub mod user;
 
 pub use audiobook::{get_audiobook, list_audiobooks};
@@ -18,4 +19,5 @@ pub use auth_me::me;
 pub use health::health_check;
 pub use index::index;
 pub use problems::get_problems;
+pub use r#static::static_handler;
 pub use user::get_users;
