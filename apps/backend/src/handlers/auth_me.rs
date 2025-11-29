@@ -1,4 +1,4 @@
-use crate::{User, auth::AuthenticatedUser};
+use crate::{auth::AuthenticatedUser, user::User};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

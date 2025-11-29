@@ -1,4 +1,4 @@
-use crate::{AppState, SESSION_COOKIE_NAME, User};
+use crate::{AppState, SESSION_COOKIE_NAME, user::User, user::UserRepository};
 use axum::{
     extract::{FromRequestParts, Request, State},
     http::{StatusCode, request::Parts},
@@ -77,16 +77,12 @@ pub async fn auth_middleware(
     }
 
     // Find user by ID
-    let user = {
-        let users = match state.users.read() {
-            Ok(users) => users,
-            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
-        };
+    let repository = UserRepository::new(&state.db_pool);
+    let user = repository.get_users_by_id(session.user_id).await;
 
-        match users.get(&session.user_id) {
-            Some(user) => user.clone(),
-            None => return StatusCode::UNAUTHORIZED.into_response(),
-        }
+    let user = match user {
+        Err(_) => return StatusCode::UNAUTHORIZED.into_response(),
+        Ok(user) => user,
     };
 
     // Add user to request extensions

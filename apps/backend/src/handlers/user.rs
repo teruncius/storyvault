@@ -1,7 +1,7 @@
 use axum::{Json, extract::State};
 use serde::Serialize;
 
-use crate::User;
+use crate::user::{User, UserRepository};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -24,8 +24,9 @@ impl From<&User> for UserResponse {
 }
 
 pub async fn get_users(State(state): State<crate::AppState>) -> Json<Vec<UserResponse>> {
-    let users = state.users.read().unwrap();
-    let mut response: Vec<UserResponse> = users.values().map(|u| u.into()).collect();
-    response.sort_by(|a, b| a.email.cmp(&b.email));
+    let repository = UserRepository::new(&state.db_pool);
+    let users = repository.get_users().await.unwrap_or_default();
+
+    let response: Vec<UserResponse> = users.iter().map(|u| u.into()).collect();
     Json(response)
 }

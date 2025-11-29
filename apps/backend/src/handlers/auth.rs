@@ -1,4 +1,5 @@
 use crate::state::Session;
+use crate::user::UserRepository;
 use crate::{AppState, auth::AuthenticatedUser};
 use crate::{SESSION_COOKIE_NAME, SESSION_DURATION_HOURS};
 use axum::{
@@ -21,58 +22,52 @@ pub async fn login(
     State(state): State<AppState>,
     axum::Json(payload): axum::Json<LoginRequest>,
 ) -> Result<Response, StatusCode> {
-    let users = state
-        .users
-        .read()
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let repository = UserRepository::new(&state.db_pool);
 
-    // Find user by email
-    let user = users.values().find(|u| u.email == payload.email);
+    let user = match repository.get_users_by_email(&payload.email).await {
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+        Ok(user) => user,
+    };
 
-    match user {
-        None => Err(StatusCode::UNAUTHORIZED),
-        Some(user) => {
-            // Verify password
-            if !bcrypt::verify(&payload.password, &user.password_hash).unwrap_or(false) {
-                return Err(StatusCode::UNAUTHORIZED);
-            }
+    // Verify password
+    if !bcrypt::verify(&payload.password, &user.password_hash).unwrap_or(false) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
 
-            // Create session
-            let session_id = Uuid::new_v4();
-            let expires_at = Utc::now() + Duration::hours(SESSION_DURATION_HOURS);
+    // Create session
+    let session_id = Uuid::new_v4();
+    let expires_at = Utc::now() + Duration::hours(SESSION_DURATION_HOURS);
 
-            let session = Session {
+    // Store session
+    {
+        let mut sessions = state
+            .sessions
+            .write()
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        sessions.insert(
+            session_id,
+            Session {
                 user_id: user.id,
                 expires_at,
-            };
-
-            // Store session
-            {
-                let mut sessions = state
-                    .sessions
-                    .write()
-                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-                sessions.insert(session_id, session);
-            }
-
-            // Create cookie header value
-            let max_age_secs = SESSION_DURATION_HOURS * 3600;
-            let cookie_value = format!(
-                "{}={}; Path=/; HttpOnly; SameSite=Lax; Max-Age={}",
-                SESSION_COOKIE_NAME, session_id, max_age_secs
-            );
-
-            let mut response = axum::response::NoContent.into_response();
-
-            response.headers_mut().insert(
-                axum::http::header::SET_COOKIE,
-                HeaderValue::from_str(&cookie_value)
-                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?,
-            );
-
-            Ok(response)
-        }
+            },
+        );
     }
+
+    // Create cookie header value
+    let max_age_secs = SESSION_DURATION_HOURS * 3600;
+    let cookie_value = format!(
+        "{}={}; Path=/; HttpOnly; SameSite=Lax; Max-Age={}",
+        SESSION_COOKIE_NAME, session_id, max_age_secs
+    );
+
+    let mut response = axum::response::NoContent.into_response();
+
+    response.headers_mut().insert(
+        axum::http::header::SET_COOKIE,
+        HeaderValue::from_str(&cookie_value).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?,
+    );
+
+    Ok(response)
 }
 
 pub async fn logout(
