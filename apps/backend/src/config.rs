@@ -60,6 +60,7 @@ impl Config {
         config
             .validate()
             .map_err(Box::<dyn std::error::Error>::from)?;
+
         Ok(config)
     }
 

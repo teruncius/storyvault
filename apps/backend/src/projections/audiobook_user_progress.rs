@@ -71,8 +71,8 @@ impl AudiobookUserProgressProjection {
             WHERE audiobook_id = ? AND user_id = ?
             "#,
         )
-        .bind(audiobook_id.to_string())
-        .bind(user_id.to_string())
+        .bind(audiobook_id)
+        .bind(user_id)
         .fetch_optional(&self.pool)
         .await?;
 
@@ -84,22 +84,20 @@ impl AudiobookUserProgressProjection {
         &self,
         user_id: Uuid,
     ) -> Result<std::collections::HashMap<Uuid, u64>, sqlx::Error> {
-        let results: Vec<(String, u64)> = sqlx::query_as(
+        let results: Vec<(Uuid, u64)> = sqlx::query_as(
             r#"
             SELECT audiobook_id, last_position_seconds
             FROM audiobook_user_progress
             WHERE user_id = ?
             "#,
         )
-        .bind(user_id.to_string())
+        .bind(user_id)
         .fetch_all(&self.pool)
         .await?;
 
         let mut positions = std::collections::HashMap::new();
-        for (audiobook_id_str, position) in results {
-            if let Ok(audiobook_id) = Uuid::parse_str(&audiobook_id_str) {
-                positions.insert(audiobook_id, position);
-            }
+        for (audiobook_id, position) in results {
+            positions.insert(audiobook_id, position);
         }
 
         Ok(positions)
@@ -116,8 +114,8 @@ impl Projection<ProjectionData> for AudiobookUserProgressProjection {
             DO UPDATE SET last_position_seconds = excluded.last_position_seconds
             "#,
         )
-        .bind(data.audiobook_id.to_string())
-        .bind(data.user_id.to_string())
+        .bind(data.audiobook_id)
+        .bind(data.user_id)
         .bind(data.last_position_seconds as i64)
         .execute(&self.pool)
         .await?;
