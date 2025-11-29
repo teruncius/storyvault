@@ -8,7 +8,7 @@ pub struct User {
     pub last_name: String,
     pub email: String,
     pub password_hash: String,
-    pub avatar_url: String,
+    pub avatar_url: Option<String>,
 }
 
 pub struct UserRepository<'a> {
@@ -38,5 +38,19 @@ impl<'a> UserRepository<'a> {
             .bind(id)
             .fetch_one(self.pool)
             .await
+    }
+
+    pub async fn save_user(&self, user: User) -> Result<(), sqlx::Error> {
+        sqlx::query(r#"INSERT INTO users (id, first_name, last_name, email, password_hash, avatar_url) VALUES (?, ?, ?, ?, ?, ?)"#)
+            .bind(user.id)
+            .bind(user.first_name)
+            .bind(user.last_name)
+            .bind(user.email)
+            .bind(user.password_hash)
+            .bind(user.avatar_url)
+            .execute(self.pool)
+            .await?;
+
+        Ok(())
     }
 }

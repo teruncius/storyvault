@@ -63,3 +63,28 @@ export function useLogout() {
         },
     });
 }
+
+export interface RegisterInput {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+}
+
+export function useRegister() {
+    return useMutation({
+        mutationFn: async (input: RegisterInput) => {
+            const response = await fetch(getApiUrl(ENDPOINTS.auth.register), {
+                method: "POST",
+                body: JSON.stringify(input),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+            if (!response.ok) {
+                throw HttpError.fromResponse(response, true);
+            }
+        },
+    });
+}

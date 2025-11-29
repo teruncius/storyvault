@@ -4,7 +4,7 @@ use crate::{
     frontend::static_handler,
     handlers::{
         get_audiobook, get_audiobook_cover, get_problems, get_users, health_check, index,
-        list_audiobooks, login, logout, me, set_audiobook_position, stream_audiobook,
+        list_audiobooks, login, logout, me, register, set_audiobook_position, stream_audiobook,
     },
 };
 use axum::{
@@ -25,7 +25,8 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
     let public_router = Router::new()
         .route("/api", get(index))
         .route("/api/health", get(health_check))
-        .route("/api/auth/login", post(login));
+        .route("/api/auth/login", post(login))
+        .route("/api/auth/register", post(register));
 
     // Protected routes (authentication required)
     let protected_router = Router::new()

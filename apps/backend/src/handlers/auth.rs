@@ -1,5 +1,5 @@
 use crate::state::Session;
-use crate::user::UserRepository;
+use crate::user::{User, UserRepository};
 use crate::{AppState, auth::AuthenticatedUser};
 use crate::{SESSION_COOKIE_NAME, SESSION_DURATION_HOURS};
 use axum::{
@@ -16,6 +16,15 @@ use uuid::Uuid;
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RegisterRequest {
+    pub email: String,
+    pub password: String,
+    pub first_name: String,
+    pub last_name: String,
 }
 
 pub async fn login(
@@ -110,4 +119,29 @@ pub async fn logout(
     );
 
     response
+}
+
+pub async fn register(
+    State(state): State<AppState>,
+    axum::Json(payload): axum::Json<RegisterRequest>,
+) -> Result<Response, StatusCode> {
+    let password_hash = match bcrypt::hash(&payload.password, bcrypt::DEFAULT_COST) {
+        Ok(hash) => hash,
+        Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
+    };
+
+    let user = User {
+        id: Uuid::new_v4(),
+        first_name: payload.first_name,
+        last_name: payload.last_name,
+        email: payload.email,
+        password_hash,
+        avatar_url: None,
+    };
+
+    let repository = UserRepository::new(&state.db_pool);
+    match repository.save_user(user).await {
+        Ok(_) => Ok(StatusCode::OK.into_response()),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
 }
