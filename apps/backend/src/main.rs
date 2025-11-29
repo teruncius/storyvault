@@ -17,7 +17,6 @@ mod app;
 mod auth;
 mod db;
 mod events;
-mod frontend;
 mod handlers;
 mod iso8601;
 mod projections;

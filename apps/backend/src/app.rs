@@ -1,10 +1,10 @@
 use crate::{
     AppState, Config,
     auth::auth_middleware,
-    frontend::static_handler,
     handlers::{
         get_audiobook, get_audiobook_cover, get_problems, get_users, health_check, index,
-        list_audiobooks, login, logout, me, register, set_audiobook_position, stream_audiobook,
+        list_audiobooks, login, logout, me, register, set_audiobook_position, static_handler,
+        stream_audiobook,
     },
 };
 use axum::{
