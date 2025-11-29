@@ -16,7 +16,10 @@ use axum::{
     middleware,
     routing::{get, post, put},
 };
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::{
+    cors::{Any, CorsLayer},
+    trace::TraceLayer,
+};
 
 pub fn build_app(state: AppState, config: &Config) -> Router {
     let cors = build_cors(config);
@@ -48,6 +51,7 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
         .merge(public_router)
         .merge(protected_router)
         .layer(cors)
+        .layer(TraceLayer::new_for_http())
         .with_state(state)
         .fallback(static_handler)
 }

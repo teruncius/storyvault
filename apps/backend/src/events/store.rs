@@ -1,5 +1,6 @@
 use super::Event;
 use sqlx::SqlitePool;
+use tracing::info;
 
 pub struct EventStore {
     pool: SqlitePool,
@@ -14,7 +15,7 @@ impl EventStore {
         let topic = event.payload.topic();
         let payload_json = event.payload.to_json()?;
 
-        println!("Recording event: {:#?}", event);
+        info!("Recording event: {:#?}", event);
 
         sqlx::query(
             r#"
@@ -34,7 +35,7 @@ impl EventStore {
             .fetch_one(&self.pool)
             .await?;
 
-        println!("Loaded stored event: {:#?}", event);
+        info!("Loaded stored event: {:#?}", event);
 
         Ok(())
     }
