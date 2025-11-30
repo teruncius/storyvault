@@ -71,7 +71,7 @@ impl AudiobookUserHistoryProjection {
         Self { pool }
     }
 
-    pub async fn get_recent_audiobooks(
+    pub async fn get_recent_activity(
         &self,
         user_id: Uuid,
     ) -> Result<Vec<ProjectionData>, sqlx::Error> {

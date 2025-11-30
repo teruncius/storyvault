@@ -13,6 +13,9 @@ export const ENDPOINTS = {
         detail: "/api/audiobook/{id}",
         position: "/api/audiobook/{id}/position",
     },
+    activity: {
+        list: "/api/activity",
+    },
     problem: {
         list: "/api/problem",
     },

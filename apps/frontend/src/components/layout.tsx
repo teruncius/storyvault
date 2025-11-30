@@ -25,6 +25,9 @@ export function Layout({ children, user }: Props) {
                             <Link to="/" className={styles.navLink}>
                                 Home
                             </Link>
+                            <Link to="/library" className={styles.navLink}>
+                                Library
+                            </Link>
                             <Link to="/problems" className={styles.navLink}>
                                 Problems
                             </Link>

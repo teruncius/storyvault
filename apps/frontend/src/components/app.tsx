@@ -15,6 +15,7 @@ import { Layout } from "@sv/fe/components/layout";
 import { LoadingPage } from "@sv/fe/components/loading-page";
 import { ThemeProvider } from "@sv/fe/theme/theme-provider";
 import { NotFoundPage } from "@sv/fe/components/not-found-page";
+import { LibraryPage } from "@sv/fe/components/library-page";
 
 export function App() {
     return (
@@ -41,6 +42,7 @@ function Content() {
                 <Route path="/" element={<ProtectedRoute />}>
                     <Route index element={<HomePage />} />
                     <Route path="problems" element={<ProblemPage />} />
+                    <Route path="library" element={<LibraryPage />} />
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>

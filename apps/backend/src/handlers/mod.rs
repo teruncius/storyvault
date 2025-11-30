@@ -1,7 +1,7 @@
+pub mod activity;
 pub mod audiobook;
 pub mod audiobook_cover;
 pub mod audiobook_position;
-pub mod audiobook_recent;
 pub mod audiobook_stream;
 pub mod auth;
 pub mod auth_me;
@@ -11,10 +11,10 @@ pub mod problems;
 pub mod r#static;
 pub mod user;
 
+pub use activity::get_recent_activity;
 pub use audiobook::{get_audiobook, list_audiobooks};
 pub use audiobook_cover::get_audiobook_cover;
 pub use audiobook_position::set_audiobook_position;
-pub use audiobook_recent::get_recent_audiobooks;
 pub use audiobook_stream::stream_audiobook;
 pub use auth::{login, logout, register};
 pub use auth_me::me;
