@@ -1,5 +1,7 @@
+pub mod audiobook_user_history;
 pub mod audiobook_user_progress;
 
+pub use audiobook_user_history::AudiobookUserHistoryProjector;
 pub use audiobook_user_progress::AudiobookUserProgressProjector;
 
 use crate::events::Event;

@@ -2,9 +2,9 @@ use crate::{
     AppState, Config,
     auth::auth_middleware,
     handlers::{
-        get_audiobook, get_audiobook_cover, get_problems, get_users, health_check, index,
-        list_audiobooks, login, logout, me, register, set_audiobook_position, static_handler,
-        stream_audiobook,
+        get_audiobook, get_audiobook_cover, get_problems, get_recent_audiobooks, get_users,
+        health_check, index, list_audiobooks, login, logout, me, register, set_audiobook_position,
+        static_handler, stream_audiobook,
     },
 };
 use axum::{
@@ -34,6 +34,7 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
     // Protected routes (authentication required)
     let protected_router = Router::new()
         .route("/api/audiobook", get(list_audiobooks))
+        .route("/api/audiobook/recent", get(get_recent_audiobooks))
         .route("/api/audiobook/{id}", get(get_audiobook))
         .route("/api/audiobook/{id}/cover", get(get_audiobook_cover))
         .route("/api/audiobook/{id}/position", put(set_audiobook_position))

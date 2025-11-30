@@ -15,9 +15,14 @@ pub struct EventBus {
 impl EventBus {
     /// Create a new event bus
     pub fn new(receiver: mpsc::UnboundedReceiver<Event>, db_pool: SqlitePool) -> Self {
-        let projectors: Vec<Box<dyn Projector>> = vec![Box::new(
-            crate::projections::AudiobookUserProgressProjector::new(db_pool.clone()),
-        )];
+        let projectors: Vec<Box<dyn Projector>> = vec![
+            Box::new(crate::projections::AudiobookUserProgressProjector::new(
+                db_pool.clone(),
+            )),
+            Box::new(crate::projections::AudiobookUserHistoryProjector::new(
+                db_pool.clone(),
+            )),
+        ];
 
         Self {
             receiver,
