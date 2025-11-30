@@ -3,10 +3,6 @@ import { useStore } from "@sv/fe/hooks/store";
 import * as styles from "@sv/fe/components/player.css";
 import { useCallback, useEffect, useRef } from "react";
 import { EventType, useUpdatePosition } from "@sv/fe/hooks/position";
-import {
-    convertISO8601ToSeconds,
-    convertSecondsToISO8601,
-} from "@sv/fe/lib/iso8601";
 import { AudiobookCover } from "@sv/fe/components/audiobook-cover";
 
 export function Player() {
@@ -17,28 +13,33 @@ export function Player() {
 
     const seekToPosition = useCallback(() => {
         if (!audioRef.current) {
-            console.log("No audio ref");
+            console.error("No audio ref");
             return;
         }
-        if (!audiobook?.positionIso) {
-            console.log("No position");
+        if (!audiobook?.positionSeconds) {
+            console.error("No position");
             return;
         }
-        console.log("Setting position to", audiobook.positionIso);
-        audioRef.current.currentTime = convertISO8601ToSeconds(
-            audiobook.positionIso,
-        );
+        console.debug("Setting initial position to", audiobook.positionSeconds);
+        audioRef.current.currentTime = audiobook.positionSeconds;
     }, [audiobook]);
 
     const sendPosition = useCallback(
         (eventType: EventType) => {
             if (!audiobook) {
+                console.error("No audiobook");
                 return;
             }
-            const position = convertSecondsToISO8601(
+            const positionSeconds = Math.floor(
                 audioRef.current?.currentTime || 0,
             );
-            mutation.mutate({ id: audiobook.id, eventType, position });
+            console.log(
+                "Sending position",
+                audiobook.id,
+                eventType,
+                positionSeconds,
+            );
+            mutation.mutate({ id: audiobook.id, eventType, positionSeconds });
         },
         [audiobook, mutation],
     );

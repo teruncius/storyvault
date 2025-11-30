@@ -223,29 +223,32 @@ fn scan_audiobooks(path: &Path) -> std::io::Result<ScanResult> {
             }
         };
 
-        // Try to extract duration
-        let duration = if audio_path.exists() {
+        // Try to extract metadata
+        let metadata = if audio_path.exists() {
             match get_audio_metadata(&audio_path) {
-                Some(metadata) => metadata.duration,
-                None => {
+                Ok(metadata) => Some(metadata),
+                Err(e) => {
                     entry_problems.push(ScanProblem {
                         source: source.clone(),
                         path: audio_path.clone(),
-                        problem_type: ScanProblemType::UnableToExtractDuration,
-                        message: format!("Unable to extract duration from {:?}", audio_path),
+                        problem_type: ScanProblemType::UnableToExtractMetadata,
+                        message: format!("Unable to extract metadata from {:?}: {}", audio_path, e),
                     });
-                    0
+                    None
                 }
             }
         } else {
-            0
+            None
         };
 
         // Only add book if there are no problems for this entry
         if entry_problems.is_empty()
             && let Some(mut book) = book
+            && let Some(meta) = metadata
         {
-            book.duration_seconds = Some(duration);
+            book.duration_seconds = meta.duration_seconds.unwrap_or_default();
+            book.sample_rate_hz = meta.sample_rate_hz.unwrap_or_default();
+            book.bit_rate_kbps = meta.bit_rate_kbps.unwrap_or_default();
             book.path = audio_path;
             books.insert(book.id, book);
         }

@@ -4,9 +4,9 @@ import type { Audiobook } from "@sv/fe/types/audiobook";
 interface PlayerState {
     currentAudiobook: string | null;
     play: (id: string) => void;
-    durations: Record<string, string>;
+    durations: Record<string, number>;
     overrideDuration: (audiobooks: Audiobook[]) => void;
-    setDuration: (id: string, duration: string) => void;
+    setDuration: (id: string, duration: number) => void;
 }
 
 export const useStore = create<PlayerState>((set, get) => ({
@@ -16,17 +16,17 @@ export const useStore = create<PlayerState>((set, get) => ({
     },
     durations: {},
     overrideDuration: (audiobooks: Audiobook[]) => {
-        const durations: Record<string, string> = {};
+        const durations: Record<string, number> = {};
         for (const audiobook of audiobooks) {
-            if (audiobook.positionIso) {
-                durations[audiobook.id] = audiobook.positionIso;
+            if (audiobook.positionSeconds) {
+                durations[audiobook.id] = audiobook.positionSeconds;
             }
         }
-        console.log("overrideDuration", durations);
+        console.debug("overrideDuration", durations);
         set({ durations });
     },
-    setDuration: (id: string, duration: string) => {
-        console.log("setDuration", id, duration);
+    setDuration: (id: string, duration: number) => {
+        console.debug("setDuration", id, duration);
         const durations = {
             ...get().durations,
             [id]: duration,

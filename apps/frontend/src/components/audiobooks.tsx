@@ -1,5 +1,4 @@
 import { AudiobookCover } from "@sv/fe/components/audiobook-cover";
-import { convertISO8601ToSeconds } from "@sv/fe/lib/iso8601";
 import { useStore } from "@sv/fe/hooks/store";
 import * as styles from "@sv/fe/components/audiobooks.css";
 import type { Audiobook } from "@sv/fe/types/audiobook";
@@ -25,8 +24,8 @@ export function Audiobooks(props: Props) {
                         width={200}
                     />
                     <ProgressBar
-                        position={durations[audiobook.id] || "PT0S"}
-                        duration={audiobook.durationIso}
+                        position={durations[audiobook.id] || 0}
+                        duration={audiobook.runtimeSeconds}
                     />
                     <div className={styles.text}>
                         <div className={styles.title}>{audiobook.title}</div>
@@ -44,15 +43,12 @@ export function Audiobooks(props: Props) {
 }
 
 interface ProgressBarProps {
-    position: string | null;
-    duration: string;
+    position: number;
+    duration: number;
 }
 
 function ProgressBar({ position, duration }: ProgressBarProps) {
-    const width =
-        (convertISO8601ToSeconds(position || "PT0S") /
-            convertISO8601ToSeconds(duration)) *
-        100;
+    const width = Math.floor((position / duration) * 100);
     return (
         <div className={styles.progress}>
             <div

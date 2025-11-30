@@ -13,7 +13,7 @@ pub enum ScanProblemType {
     MissingIndexYaml,
     MissingAudioFile,
     InvalidYamlFormat,
-    UnableToExtractDuration,
+    UnableToExtractMetadata,
     MissingCover,
     InvalidDataFormat,
     MissingStorageDirectory,
@@ -42,7 +42,11 @@ pub struct Audiobook {
     #[serde(skip)]
     pub path: PathBuf,
     #[serde(skip)]
-    pub duration_seconds: Option<u64>,
+    pub duration_seconds: u64,
+    #[serde(skip)]
+    pub sample_rate_hz: u32,
+    #[serde(skip)]
+    pub bit_rate_kbps: u64,
 }
 
 fn deserialize_authors<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>

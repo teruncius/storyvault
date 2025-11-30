@@ -18,7 +18,6 @@ mod auth;
 mod db;
 mod events;
 mod handlers;
-mod iso8601;
 mod projections;
 mod user;
 pub use app::build_app;

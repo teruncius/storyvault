@@ -10,7 +10,6 @@ use uuid::Uuid;
 use crate::AppState;
 use crate::Audiobook;
 use crate::auth::AuthenticatedUser;
-use crate::iso8601::seconds_to_duration;
 use crate::projections::audiobook_user_progress::AudiobookUserProgressProjection;
 
 #[derive(Serialize)]
@@ -24,8 +23,10 @@ pub struct AudiobookResponse {
     cover_url: String,
     position_url: String,
     stream_url: String,
-    position_iso: Option<String>,
-    duration_iso: Option<String>,
+    position_seconds: Option<u64>,
+    runtime_seconds: u64,
+    sample_rate_hz: u32,
+    bit_rate_kbps: u64,
 }
 
 impl AudiobookResponse {
@@ -39,8 +40,10 @@ impl AudiobookResponse {
             cover_url: format!("{}/api/audiobook/{}/cover", base_url, book.id),
             position_url: format!("{}/api/audiobook/{}/position", base_url, book.id),
             stream_url: format!("{}/api/audiobook/{}/stream", base_url, book.id),
-            position_iso: position_seconds.map(seconds_to_duration),
-            duration_iso: book.duration_seconds.map(seconds_to_duration),
+            position_seconds,
+            runtime_seconds: book.duration_seconds,
+            sample_rate_hz: book.sample_rate_hz,
+            bit_rate_kbps: book.bit_rate_kbps,
         }
     }
 }

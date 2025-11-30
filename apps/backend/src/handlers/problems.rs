@@ -23,7 +23,7 @@ impl From<&ScanProblem> for ProblemResponse {
                 ScanProblemType::MissingIndexYaml => "MissingIndexYaml",
                 ScanProblemType::MissingAudioFile => "MissingAudioFile",
                 ScanProblemType::InvalidYamlFormat => "InvalidYamlFormat",
-                ScanProblemType::UnableToExtractDuration => "UnableToExtractDuration",
+                ScanProblemType::UnableToExtractMetadata => "UnableToExtractDuration",
                 ScanProblemType::MissingCover => "MissingCover",
                 ScanProblemType::InvalidDataFormat => "InvalidDataFormat",
                 ScanProblemType::MissingStorageDirectory => "MissingStorageDirectory",

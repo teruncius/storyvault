@@ -5,6 +5,6 @@ export interface Audiobook {
     year: string;
     coverUrl: string;
     streamUrl: string;
-    positionIso: string | null;
-    durationIso: string;
+    positionSeconds: number | null;
+    runtimeSeconds: number;
 }

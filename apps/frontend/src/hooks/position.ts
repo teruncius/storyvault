@@ -15,7 +15,7 @@ export type EventType = (typeof EventType)[keyof typeof EventType];
 interface UpdatePositionRequest {
     id: string;
     eventType: EventType;
-    position: string;
+    positionSeconds: number;
 }
 
 export function useUpdatePosition() {
@@ -24,7 +24,7 @@ export function useUpdatePosition() {
         mutationFn: async ({
             id,
             eventType,
-            position,
+            positionSeconds,
         }: UpdatePositionRequest) => {
             const response = await fetch(
                 getApiUrl(ENDPOINTS.audiobook.position, id),
@@ -35,7 +35,7 @@ export function useUpdatePosition() {
                     },
                     body: JSON.stringify({
                         eventType,
-                        positionIso: position,
+                        positionSeconds,
                     }),
                     credentials: "include",
                     keepalive: true,
@@ -44,7 +44,7 @@ export function useUpdatePosition() {
             if (!response.ok) {
                 throw HttpError.fromResponse(response);
             }
-            setDuration(id, position);
+            setDuration(id, positionSeconds);
         },
     });
 }

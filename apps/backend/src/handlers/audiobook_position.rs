@@ -12,18 +12,16 @@ use crate::{
     AppState,
     auth::AuthenticatedUser,
     events::{AudiobookProgressPayload, Event, EventPayload, ProgressType},
-    iso8601::duration_to_seconds,
 };
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SetPosition {
     pub event_type: String,
-    pub position_iso: String,
+    pub position_seconds: u64,
 }
 
 /// Set the playback position for an audiobook.
-/// Accepts ISO8601 duration string.
 pub async fn set_audiobook_position(
     State(state): State<AppState>,
     AuthenticatedUser(user): AuthenticatedUser,
@@ -35,10 +33,7 @@ pub async fn set_audiobook_position(
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid event type").into_response(),
     };
 
-    let position_seconds = match duration_to_seconds(&payload.position_iso) {
-        Some(s) => s,
-        None => return (StatusCode::BAD_REQUEST, "Invalid position format").into_response(),
-    };
+    let position_seconds = payload.position_seconds;
 
     // Create the event with new structure
     let event = Event {
