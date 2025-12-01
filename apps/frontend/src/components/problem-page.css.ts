@@ -17,3 +17,13 @@ export const sidebar = style({
 export const content = style({
     flex: 3,
 });
+
+export const emptyState = style({
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "3rem",
+    fontSize: "1.25rem",
+    color: "#666",
+    textAlign: "center",
+});

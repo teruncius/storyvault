@@ -37,16 +37,24 @@ export function ProblemPage() {
         return typeMatch && sourceMatch;
     });
 
+    if (!problems || problems.length === 0) {
+        return (
+            <div className={styles.emptyState}>
+                <p>No problems found!</p>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.twocol}>
             <div className={styles.sidebar}>
                 <ProblemTypes
-                    problems={problems || []}
+                    problems={problems}
                     selectedTypes={selectedTypes}
                     onToggleType={toggleType}
                 />
                 <ProblemSources
-                    problems={problems || []}
+                    problems={problems}
                     selectedSources={selectedSources}
                     onToggleSource={toggleSource}
                 />
