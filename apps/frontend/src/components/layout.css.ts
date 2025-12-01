@@ -6,6 +6,7 @@ export const container = style({
     flexDirection: "column",
     minHeight: "100vh",
     background: vars.color.backdrop,
+    scrollbarGutter: "stable",
 });
 
 export const header = style({
