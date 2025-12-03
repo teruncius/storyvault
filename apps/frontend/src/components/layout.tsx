@@ -7,6 +7,7 @@ import { Player } from "@sv/fe/components/player";
 import type { User } from "@sv/fe/types/user";
 import { Link } from "react-router-dom";
 import { useTheme } from "@sv/fe/theme/theme-hook";
+import { Search } from "@sv/fe/components/search";
 
 interface Props extends PropsWithChildren {
     user: User;
@@ -32,6 +33,7 @@ export function Layout({ children, user }: Props) {
                                 Problems
                             </Link>
                         </nav>
+                        <Search />
                     </div>
                     <div className={styles.area.right}>
                         <div className={styles.userInfo}>

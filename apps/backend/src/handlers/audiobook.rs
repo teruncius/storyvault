@@ -1,10 +1,10 @@
 use axum::{
     Json,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::AppState;
@@ -48,9 +48,15 @@ impl AudiobookResponse {
     }
 }
 
+#[derive(Deserialize)]
+pub struct ListAudiobooksQuery {
+    search: Option<String>,
+}
+
 pub async fn list_audiobooks(
     State(state): State<AppState>,
     AuthenticatedUser(user): AuthenticatedUser,
+    Query(query): Query<ListAudiobooksQuery>,
 ) -> impl IntoResponse {
     let base_url = state.config.url.base.clone();
 
@@ -64,6 +70,20 @@ pub async fn list_audiobooks(
     // Clone the books we need, then drop the lock
     let mut books: Vec<Audiobook> =
         { state.audiobooks.read().unwrap().values().cloned().collect() };
+
+    // Filter by search term if provided
+    if let Some(search_term) = query.search {
+        let search_lower = search_term.to_lowercase();
+        books.retain(|book| {
+            book.title.to_lowercase().contains(&search_lower)
+                || book
+                    .authors
+                    .iter()
+                    .any(|author| author.to_lowercase().contains(&search_lower))
+        });
+    }
+
+    // Sort by title
     books.sort_by(|a, b| a.title.cmp(&b.title));
 
     let response: Vec<AudiobookResponse> = books

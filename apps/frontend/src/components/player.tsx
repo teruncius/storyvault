@@ -58,6 +58,8 @@ export function Player() {
         return null;
     }
 
+    console.log(audiobook);
+
     return (
         <figure className={styles.container}>
             <figcaption className={styles.caption}>

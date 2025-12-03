@@ -21,9 +21,10 @@ export const ENDPOINTS = {
     },
 };
 
-export function getApiUrl(endpoint: string, ...params: string[]) {
-    return (
-        API_URL +
-        endpoint.replace(/\{\w+\}/g, (param) => params.shift() || param)
+export function getApiUrl(endpoint: string, ...params: string[]): URL {
+    const path = endpoint.replace(
+        /\{\w+\}/g,
+        (param) => params.shift() || param,
     );
+    return new URL(API_URL + path);
 }
