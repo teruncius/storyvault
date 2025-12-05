@@ -9,6 +9,18 @@ interface Props {
     audiobooks: Audiobook[];
 }
 
+function getSampleRateColor(sampleRateHz: number): string {
+    if (sampleRateHz >= 44_100) return "#22c55e"; // green
+    if (sampleRateHz >= 30_000) return "#eab308"; // yellow
+    return "#ef4444"; // red
+}
+
+function getBitRateColor(bitRateKbps: number): string {
+    if (bitRateKbps >= 120) return "#22c55e"; // green
+    if (bitRateKbps >= 60) return "#eab308"; // yellow
+    return "#ef4444"; // red
+}
+
 export function Audiobooks(props: Props) {
     return (
         <div className={styles.container}>
@@ -52,6 +64,10 @@ function AudiobookTile({ audiobook }: AudiobookTileProps) {
                     title={audiobook.title}
                     width={200}
                 />
+                <QualityIndicators
+                    sampleRateHz={audiobook.sampleRateHz}
+                    bitRateKbps={audiobook.bitRateKbps}
+                />
                 <ProgressBar
                     position={durations[audiobook.id] || 0}
                     duration={audiobook.runtimeSeconds}
@@ -85,6 +101,28 @@ function AudiobookTile({ audiobook }: AudiobookTileProps) {
                     </>
                 </div>
             </div>
+        </div>
+    );
+}
+
+interface QualityIndicatorsProps {
+    sampleRateHz: number;
+    bitRateKbps: number;
+}
+
+function QualityIndicators({ sampleRateHz, bitRateKbps }: QualityIndicatorsProps) {
+    return (
+        <div className={styles.qualityIndicators}>
+            <div
+                className={styles.qualityCircle}
+                style={{ backgroundColor: getSampleRateColor(sampleRateHz) }}
+                title={`Sample Rate: ${sampleRateHz} Hz`}
+            />
+            <div
+                className={styles.qualityCircle}
+                style={{ backgroundColor: getBitRateColor(bitRateKbps) }}
+                title={`Bit Rate: ${bitRateKbps} kbps`}
+            />
         </div>
     );
 }

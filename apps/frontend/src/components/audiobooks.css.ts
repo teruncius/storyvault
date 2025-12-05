@@ -71,6 +71,24 @@ export const coverContainer = style({
     width: "100%",
 });
 
+export const qualityIndicators = style({
+    position: "absolute",
+    top: "0.5rem",
+    left: "0.5rem",
+    display: "flex",
+    gap: "0.25rem",
+    zIndex: 10,
+    opacity: 0,
+    transition: "opacity 0.2s",
+});
+
+export const qualityCircle = style({
+    width: "0.5rem",
+    height: "0.5rem",
+    borderRadius: "50%",
+    border: "1px solid rgba(0, 0, 0, 0.3)",
+});
+
 export const progress = style({
     position: "absolute",
     bottom: "0.5rem",
@@ -113,6 +131,10 @@ export const menuButton = style({
 });
 
 globalStyle(`${tile}:hover ${menuButton}`, {
+    opacity: 1,
+});
+
+globalStyle(`${tile}:hover ${qualityIndicators}`, {
     opacity: 1,
 });
 

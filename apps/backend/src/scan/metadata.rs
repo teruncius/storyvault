@@ -76,7 +76,7 @@ pub fn get_audio_metadata(path: &Path) -> Result<AudioMetadata, Box<dyn std::err
     let bit_rate_kbps = if duration_seconds.is_some() {
         std::fs::metadata(path).ok().map(|metadata| {
             let file_size_bits = metadata.len() * 8;
-            (file_size_bits / duration_seconds.unwrap()) as u64
+            (file_size_bits / duration_seconds.unwrap() / 1024) as u64
         })
     } else {
         None

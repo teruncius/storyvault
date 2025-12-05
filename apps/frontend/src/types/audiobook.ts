@@ -7,4 +7,6 @@ export interface Audiobook {
     streamUrl: string;
     positionSeconds: number | null;
     runtimeSeconds: number;
+    sampleRateHz: number;
+    bitRateKbps: number;
 }
