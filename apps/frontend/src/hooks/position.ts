@@ -1,5 +1,5 @@
 import { HttpError } from "@sv/fe/lib/query-client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ENDPOINTS, getApiUrl } from "@sv/fe/lib/config";
 import { useStore } from "@sv/fe/hooks/store";
 
@@ -45,6 +45,31 @@ export function useUpdatePosition() {
                 throw HttpError.fromResponse(response);
             }
             setDuration(id, positionSeconds);
+        },
+    });
+}
+
+interface DeletePositionRequest {
+    id: string;
+}
+
+export function useDeletePosition() {
+    const { removeDuration } = useStore();
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ id }: DeletePositionRequest) => {
+            const response = await fetch(
+                getApiUrl(ENDPOINTS.audiobook.position, id),
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                },
+            );
+            if (!response.ok) {
+                throw HttpError.fromResponse(response);
+            }
+            removeDuration(id);
+            queryClient.invalidateQueries({ queryKey: ["activity"] });
         },
     });
 }

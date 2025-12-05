@@ -2,8 +2,8 @@ use sqlx::sqlite::SqlitePool;
 use uuid::Uuid;
 
 use crate::events::{Event, EventPayload};
+use crate::projections::ProjectionError;
 use crate::projections::Projector;
-use crate::projections::{Projection, ProjectionError};
 use chrono::DateTime;
 use chrono::Utc;
 use sqlx::Row;
@@ -39,7 +39,10 @@ impl AudiobookUserHistoryProjector {
 
 impl Projector for AudiobookUserHistoryProjector {
     fn handles(&self, event: &Event) -> bool {
-        matches!(event.payload, EventPayload::AudiobookProgress(_))
+        matches!(
+            event.payload,
+            EventPayload::AudiobookProgress(_) | EventPayload::ResetAudiobookProgress(_)
+        )
     }
 
     fn project<'a>(
@@ -47,17 +50,22 @@ impl Projector for AudiobookUserHistoryProjector {
         event: &'a Event,
     ) -> std::pin::Pin<Box<dyn Future<Output = Result<(), ProjectionError>> + Send + 'a>> {
         Box::pin(async move {
-            let EventPayload::AudiobookProgress(payload) = &event.payload else {
-                return Err(ProjectionError::new("Invalid event".into()));
-            };
-
-            let data = ProjectionData {
-                user_id: payload.user_id,
-                audiobook_id: payload.audiobook_id,
-                accessed_at: event.created_at,
-            };
-
-            self.projection.save(&data).await
+            match &event.payload {
+                EventPayload::AudiobookProgress(payload) => {
+                    let data = ProjectionData {
+                        user_id: payload.user_id,
+                        audiobook_id: payload.audiobook_id,
+                        accessed_at: event.created_at,
+                    };
+                    self.projection.save(&data).await
+                }
+                EventPayload::ResetAudiobookProgress(payload) => {
+                    self.projection
+                        .delete(payload.user_id, payload.audiobook_id)
+                        .await
+                }
+                _ => Err(ProjectionError::new("Invalid event".into())),
+            }
         })
     }
 }
@@ -69,6 +77,39 @@ pub struct AudiobookUserHistoryProjection {
 impl AudiobookUserHistoryProjection {
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
+    }
+
+    async fn save(&self, data: &ProjectionData) -> Result<(), ProjectionError> {
+        sqlx::query(
+            r#"
+            INSERT INTO audiobook_user_history (user_id, audiobook_id, accessed_at)
+            VALUES (?, ?, ?)
+            ON CONFLICT (user_id, audiobook_id) DO UPDATE SET accessed_at = ?
+            "#,
+        )
+        .bind(data.user_id)
+        .bind(data.audiobook_id)
+        .bind(data.accessed_at)
+        .bind(data.accessed_at)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    async fn delete(&self, user_id: Uuid, audiobook_id: Uuid) -> Result<(), ProjectionError> {
+        sqlx::query(
+            r#"
+            DELETE FROM audiobook_user_history
+            WHERE user_id = ? AND audiobook_id = ?
+            "#,
+        )
+        .bind(user_id)
+        .bind(audiobook_id)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
     }
 
     pub async fn get_recent_activity(
@@ -89,25 +130,5 @@ impl AudiobookUserHistoryProjection {
         .await?;
 
         Ok(result)
-    }
-}
-
-impl Projection<ProjectionData> for AudiobookUserHistoryProjection {
-    async fn save(&self, data: &ProjectionData) -> Result<(), ProjectionError> {
-        sqlx::query(
-            r#"
-            INSERT INTO audiobook_user_history (user_id, audiobook_id, accessed_at)
-            VALUES (?, ?, ?)
-            ON CONFLICT (user_id, audiobook_id) DO UPDATE SET accessed_at = ?
-            "#,
-        )
-        .bind(data.user_id)
-        .bind(data.audiobook_id)
-        .bind(data.accessed_at)
-        .bind(data.accessed_at)
-        .execute(&self.pool)
-        .await?;
-
-        Ok(())
     }
 }

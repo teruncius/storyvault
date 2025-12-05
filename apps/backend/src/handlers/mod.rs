@@ -14,7 +14,7 @@ pub mod user;
 pub use activity::get_recent_activity;
 pub use audiobook::{get_audiobook, list_audiobooks};
 pub use audiobook_cover::get_audiobook_cover;
-pub use audiobook_position::set_audiobook_position;
+pub use audiobook_position::{reset_audiobook_position, set_audiobook_position};
 pub use audiobook_stream::stream_audiobook;
 pub use auth::{login, logout, register};
 pub use auth_me::me;

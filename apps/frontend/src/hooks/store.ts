@@ -7,6 +7,7 @@ interface PlayerState {
     durations: Record<string, number>;
     overrideDuration: (audiobooks: Audiobook[]) => void;
     setDuration: (id: string, duration: number) => void;
+    removeDuration: (id: string) => void;
 }
 
 export const useStore = create<PlayerState>((set, get) => ({
@@ -31,6 +32,12 @@ export const useStore = create<PlayerState>((set, get) => ({
             ...get().durations,
             [id]: duration,
         };
+        set({ durations });
+    },
+    removeDuration: (id: string) => {
+        console.debug("removeDuration", id);
+        const durations = { ...get().durations };
+        delete durations[id];
         set({ durations });
     },
 }));

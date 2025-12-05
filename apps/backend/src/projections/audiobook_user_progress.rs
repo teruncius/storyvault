@@ -1,5 +1,5 @@
 use crate::events::{Event, EventPayload};
-use crate::projections::{Projection, ProjectionError, Projector};
+use crate::projections::{ProjectionError, Projector};
 use sqlx::SqlitePool;
 use std::future::Future;
 use uuid::Uuid;
@@ -26,7 +26,10 @@ impl AudiobookUserProgressProjector {
 
 impl Projector for AudiobookUserProgressProjector {
     fn handles(&self, event: &Event) -> bool {
-        matches!(event.payload, EventPayload::AudiobookProgress(_))
+        matches!(
+            event.payload,
+            EventPayload::AudiobookProgress(_) | EventPayload::ResetAudiobookProgress(_)
+        )
     }
 
     fn project<'a>(
@@ -34,19 +37,24 @@ impl Projector for AudiobookUserProgressProjector {
         event: &'a Event,
     ) -> std::pin::Pin<Box<dyn Future<Output = Result<(), ProjectionError>> + Send + 'a>> {
         Box::pin(async move {
-            let EventPayload::AudiobookProgress(payload) = &event.payload else {
-                return Err(ProjectionError::new("Invalid event".into()));
-            };
-
-            let data = ProjectionData {
-                audiobook_id: payload.audiobook_id,
-                user_id: payload.user_id,
-                last_position_seconds: payload.position_seconds,
-            };
-
-            self.projection.save(&data).await?;
-
-            Ok(())
+            match &event.payload {
+                EventPayload::AudiobookProgress(payload) => {
+                    let data = ProjectionData {
+                        audiobook_id: payload.audiobook_id,
+                        user_id: payload.user_id,
+                        last_position_seconds: payload.position_seconds,
+                    };
+                    self.projection.save(&data).await?;
+                    Ok(())
+                }
+                EventPayload::ResetAudiobookProgress(payload) => {
+                    self.projection
+                        .delete(payload.user_id, payload.audiobook_id)
+                        .await?;
+                    Ok(())
+                }
+                _ => Err(ProjectionError::new("Invalid event".into())),
+            }
         })
     }
 }
@@ -59,6 +67,39 @@ pub struct AudiobookUserProgressProjection {
 impl AudiobookUserProgressProjection {
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
+    }
+
+    async fn save(&self, data: &ProjectionData) -> Result<(), ProjectionError> {
+        sqlx::query(
+            r#"
+            INSERT INTO audiobook_user_progress (audiobook_id, user_id, last_position_seconds)
+            VALUES (?, ?, ?)
+            ON CONFLICT(audiobook_id, user_id) 
+            DO UPDATE SET last_position_seconds = excluded.last_position_seconds
+            "#,
+        )
+        .bind(data.audiobook_id)
+        .bind(data.user_id)
+        .bind(data.last_position_seconds as i64)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    async fn delete(&self, user_id: Uuid, audiobook_id: Uuid) -> Result<(), ProjectionError> {
+        sqlx::query(
+            r#"
+            DELETE FROM audiobook_user_progress
+            WHERE user_id = ? AND audiobook_id = ?
+            "#,
+        )
+        .bind(user_id)
+        .bind(audiobook_id)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
     }
 
     /// Get the latest position for a user's audiobook
@@ -104,25 +145,5 @@ impl AudiobookUserProgressProjection {
         }
 
         Ok(positions)
-    }
-}
-
-impl Projection<ProjectionData> for AudiobookUserProgressProjection {
-    async fn save(&self, data: &ProjectionData) -> Result<(), ProjectionError> {
-        sqlx::query(
-            r#"
-            INSERT INTO audiobook_user_progress (audiobook_id, user_id, last_position_seconds)
-            VALUES (?, ?, ?)
-            ON CONFLICT(audiobook_id, user_id) 
-            DO UPDATE SET last_position_seconds = excluded.last_position_seconds
-            "#,
-        )
-        .bind(data.audiobook_id)
-        .bind(data.user_id)
-        .bind(data.last_position_seconds as i64)
-        .execute(&self.pool)
-        .await?;
-
-        Ok(())
     }
 }

@@ -1,5 +1,5 @@
 import { vars } from "@sv/fe/theme/vars.css";
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 
 export const container = style({
     display: "grid",
@@ -28,11 +28,11 @@ export const tile = style({
     display: "flex",
     flexDirection: "column",
     gap: "0.25rem",
-    overflow: "hidden",
     padding: "0.5rem",
     background: vars.color.background,
     border: 0,
     borderRadius: "0.5rem",
+    overflow: "hidden",
     cursor: "pointer",
     ":hover": {
         textDecoration: "underline",
@@ -50,6 +50,7 @@ export const title = style({
     whiteSpace: "nowrap",
     color: vars.color.text,
     fontSize: "0.75rem",
+    textAlign: "center",
 });
 
 export const subtitle = style({
@@ -62,17 +63,94 @@ export const subtitle = style({
     color: vars.color.text,
     fontSize: "0.75rem",
     opacity: 0.7,
+    textAlign: "center",
+});
+
+export const coverContainer = style({
+    position: "relative",
+    width: "100%",
 });
 
 export const progress = style({
-    width: "100%",
-    height: "0.5rem",
+    position: "absolute",
+    bottom: "0.5rem",
+    left: "0.5rem",
+    right: "0.5rem",
+    width: "auto",
+    height: "0.25rem",
     overflow: "hidden",
-    backgroundColor: vars.color.background,
-    borderRadius: "0.25rem",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: "0.125rem",
 });
 
 export const progressFill = style({
     height: "100%",
     backgroundColor: vars.color.primary,
+});
+
+export const menuButton = style({
+    position: "absolute",
+    top: "0.5rem",
+    right: "0.5rem",
+    width: "2rem",
+    height: "2rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    color: "white",
+    border: "none",
+    borderRadius: "50%",
+    cursor: "pointer",
+    fontSize: "1.25rem",
+    fontWeight: "bold",
+    zIndex: 10,
+    opacity: 0,
+    transition: "opacity 0.2s, background-color 0.2s",
+    ":hover": {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+    },
+});
+
+globalStyle(`${tile}:hover ${menuButton}`, {
+    opacity: 1,
+});
+
+export const dropdown = style({
+    position: "absolute",
+    top: "3rem",
+    right: "0.5rem",
+    backgroundColor: vars.color.background,
+    border: `1px solid ${vars.color.border}`,
+    borderRadius: "0.5rem",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+    minWidth: "9rem",
+    zIndex: 20,
+    overflow: "hidden",
+});
+
+export const dropdownHeader = style({
+    padding: "0.75rem 1rem",
+    fontSize: "0.75rem",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    color: vars.color.text,
+    opacity: 0.7,
+    borderBottom: `1px solid ${vars.color.border}`,
+});
+
+export const dropdownItem = style({
+    width: "100%",
+    padding: "0.75rem 1rem",
+    textAlign: "left",
+    backgroundColor: "transparent",
+    border: "none",
+    color: vars.color.text,
+    fontSize: "0.875rem",
+    cursor: "pointer",
+    transition: "background-color 0.2s",
+    ":hover": {
+        backgroundColor: vars.color.primary,
+        color: "white",
+    },
 });

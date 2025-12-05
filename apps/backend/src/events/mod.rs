@@ -55,6 +55,12 @@ pub struct AudiobookProgressPayload {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct ResetAudiobookProgressPayload {
+    pub audiobook_id: Uuid,
+    pub user_id: Uuid,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TestPayload {
     pub message: String,
 }
@@ -63,6 +69,7 @@ pub struct TestPayload {
 pub enum EventPayload {
     Test(TestPayload),
     AudiobookProgress(AudiobookProgressPayload),
+    ResetAudiobookProgress(ResetAudiobookProgressPayload),
 }
 
 impl EventPayload {
@@ -70,6 +77,7 @@ impl EventPayload {
         match self {
             EventPayload::Test(_) => "test",
             EventPayload::AudiobookProgress(_) => "audiobook.progress",
+            EventPayload::ResetAudiobookProgress(_) => "audiobook.progress_reset",
         }
     }
 
@@ -77,6 +85,7 @@ impl EventPayload {
         match self {
             EventPayload::Test(payload) => serde_json::to_string(payload),
             EventPayload::AudiobookProgress(payload) => serde_json::to_string(payload),
+            EventPayload::ResetAudiobookProgress(payload) => serde_json::to_string(payload),
         }
     }
 
@@ -88,6 +97,10 @@ impl EventPayload {
             "audiobook.progress" => {
                 let payload: AudiobookProgressPayload = serde_json::from_str(payload_json)?;
                 Ok(EventPayload::AudiobookProgress(payload))
+            }
+            "audiobook.progress_reset" => {
+                let payload: ResetAudiobookProgressPayload = serde_json::from_str(payload_json)?;
+                Ok(EventPayload::ResetAudiobookProgress(payload))
             }
             _ => Err(format!("Unknown event topic: {}", topic).into()),
         }

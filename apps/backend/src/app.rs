@@ -3,8 +3,8 @@ use crate::{
     auth::auth_middleware,
     handlers::{
         get_audiobook, get_audiobook_cover, get_problems, get_recent_activity, get_users,
-        health_check, index, list_audiobooks, login, logout, me, register, set_audiobook_position,
-        static_handler, stream_audiobook,
+        health_check, index, list_audiobooks, login, logout, me, register,
+        reset_audiobook_position, set_audiobook_position, static_handler, stream_audiobook,
     },
 };
 use axum::{
@@ -14,7 +14,7 @@ use axum::{
         header::{AUTHORIZATION, CONTENT_TYPE, COOKIE},
     },
     middleware,
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
 };
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -38,6 +38,10 @@ pub fn build_app(state: AppState, config: &Config) -> Router {
         .route("/api/audiobook/{id}", get(get_audiobook))
         .route("/api/audiobook/{id}/cover", get(get_audiobook_cover))
         .route("/api/audiobook/{id}/position", put(set_audiobook_position))
+        .route(
+            "/api/audiobook/{id}/position",
+            delete(reset_audiobook_position),
+        )
         .route("/api/audiobook/{id}/stream", get(stream_audiobook))
         .route("/api/user", get(get_users))
         .route("/api/auth/logout", post(logout))

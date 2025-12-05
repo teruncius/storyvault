@@ -11,7 +11,9 @@ use uuid::Uuid;
 use crate::{
     AppState,
     auth::AuthenticatedUser,
-    events::{AudiobookProgressPayload, Event, EventPayload, ProgressType},
+    events::{
+        AudiobookProgressPayload, Event, EventPayload, ProgressType, ResetAudiobookProgressPayload,
+    },
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -52,6 +54,32 @@ pub async fn set_audiobook_position(
         Ok(_) => StatusCode::OK.into_response(),
         Err(e) => {
             error!("Failed to enqueue event: {}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, "Failed to enqueue event").into_response()
+        }
+    }
+}
+
+/// Delete/reset the playback position for an audiobook.
+pub async fn reset_audiobook_position(
+    State(state): State<AppState>,
+    AuthenticatedUser(user): AuthenticatedUser,
+    Path(id): Path<Uuid>,
+) -> impl IntoResponse {
+    // Create the reset event
+    let event = Event {
+        event_id: Uuid::new_v4(),
+        created_at: chrono::Utc::now(),
+        payload: EventPayload::ResetAudiobookProgress(ResetAudiobookProgressPayload {
+            audiobook_id: id,
+            user_id: user.id,
+        }),
+    };
+
+    // Enqueue the event for background processing
+    match state.event_queue.enqueue(event) {
+        Ok(_) => StatusCode::OK.into_response(),
+        Err(e) => {
+            error!("Failed to enqueue reset event: {}", e);
             (StatusCode::INTERNAL_SERVER_ERROR, "Failed to enqueue event").into_response()
         }
     }
